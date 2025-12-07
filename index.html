@@ -205,19 +205,6 @@
             <div class="muted" id="previewSubtitle">Complete the form and click "Show My Vacation".</div>
           </div>
         </div>
-
-        <div class="card" style="padding:10px;">
-          <strong style="display:block; margin-bottom:8px">Budget to estimated USD</strong>
-          <div class="muted" id="budgetHint">Select a budget to see an expected USD average after results.</div>
-        </div>
-
-        <div class="card" style="padding:10px;">
-          <strong style="display:block; margin-bottom:8px">How this works</strong>
-          <div class="muted" style="font-size:0.92rem; line-height:1.35">
-            The app uses a small destination database and maps each destination to approximate coordinates on the provided world map. When you click Show My Vacation it selects the best-fit destination, shows its pin on the map, estimates your USD spend from your budget, and converts that USD into the local currency (1 USD base).
-          </div>
-        </div>
-
       </aside>
     </div>
 
@@ -275,6 +262,38 @@
     const BUDGET_MAP = {
       "<1000": 700,"1000-2000":1500,"2000-3000":2500,"3000-4000":3500,"4000-5000":4500,"5000-10000":7500,">10000":12500
     };
+
+    const DESTINATIONS = [
+      // Complete list with features and pics here...
+      { id:'tokyo_jp', title:'Tokyo, Japan', country:'Japan', hemisphere:'eastern northern', climate:'warmer', seasons:['Spring','Summer','Fall','Winter'], stay:['few','week','2weeks','3weeks'], currency:'JPY', x:82, y:36,
+        features: ['Tokyo Disneyland & DisneySea', 'Historic temples', 'Modern shopping districts', 'Sushi and street food'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/1/16/Tokyo_Skyline_2020.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e4/Sensoji_Temple_Tokyo.jpg','https://upload.wikimedia.org/wikipedia/commons/0/0e/Shibuya_Crossing_2019.jpg']
+      },
+      { id:'paris_fr', title:'Paris, France', country:'France', hemisphere:'eastern northern', climate:'cooler', seasons:['Spring','Fall','Summer','Winter'], stay:['few','week','2weeks'], currency:'EUR', x:47, y:33,
+        features: ['Eiffel Tower', 'Louvre Museum', 'Seine River cruises', 'French cuisine tasting'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/a/a6/Paris_vue_densemble_tour_Saint-Jacques.jpg','https://upload.wikimedia.org/wikipedia/commons/6/6d/Louvre_Museum_Wikimedia_Commons.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e6/Sacre_Coeur_Basilica_Paris.jpg']
+      },
+      { id:'sydney_au', title:'Sydney, Australia', country:'Australia', hemisphere:'eastern southern', climate:'warmer', seasons:['Summer','Spring','Fall','Winter'], stay:['week','2weeks','3weeks'], currency:'AUD', x:82, y:80,
+        features: ['Sydney Opera House', 'Bondi Beach', 'Harbour Bridge climb', 'Royal Botanic Garden'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/b/b0/Sydney_Opera_House_Sails.jpg','https://upload.wikimedia.org/wikipedia/commons/5/57/Bondi_Beach_from_cliff.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f9/Sydney_Harbour_Bridge_night.jpg']
+      },
+      { id:'rio_br', title:'Rio de Janeiro, Brazil', country:'Brazil', hemisphere:'western southern', climate:'warmer', seasons:['Summer','Spring','Fall'], stay:['few','week','2weeks'], currency:'BRL', x:41, y:60,
+        features: ['Christ the Redeemer', 'Copacabana Beach', 'Sugarloaf Mountain', 'Samba and Carnival'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/5/5b/Christ_the_Redeemer_-_Rio_de_Janeiro.jpg','https://upload.wikimedia.org/wikipedia/commons/7/73/Copacabana_Beach_Rio.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f8/Sugarloaf_Mountain_from_Urca_Hill.jpg']
+      },
+      { id:'cape_sa', title:'Cape Town, South Africa', country:'South Africa', hemisphere:'eastern southern', climate:'cooler', seasons:['Summer','Spring','Fall','Winter'], stay:['week','2weeks'], currency:'ZAR', x:49, y:75,
+        features: ['Table Mountain', 'Cape Point', 'V&A Waterfront', 'Winelands tours'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/3/30/Table_Mountain_Cape_Town.jpg','https://upload.wikimedia.org/wikipedia/commons/6/61/Cape_Point.jpg','https://upload.wikimedia.org/wikipedia/commons/4/4b/V&A_Waterfront_Cape_Town.jpg']
+      },
+      { id:'ny_us', title:'New York City, USA', country:'USA', hemisphere:'western northern', climate:'cooler', seasons:['Fall','Winter','Spring','Summer'], stay:['few','week'], currency:'USD', x:18, y:30,
+        features: ['Statue of Liberty', 'Central Park', 'Broadway shows', 'Times Square'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/a/ab/Lower_Manhattan_skyline_-_June_2017.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f7/Central_Park_New_York_City.jpg','https://upload.wikimedia.org/wikipedia/commons/4/4c/Times_Square_by_night.jpg']
+      },
+      { id:'bangkok_th', title:'Bangkok, Thailand', country:'Thailand', hemisphere:'eastern northern', climate:'warmer', seasons:['Winter','Spring','Summer'], stay:['few','week','2weeks'], currency:'THB', x:83, y:25,
+        features: ['Grand Palace', 'Floating Markets', 'Street food tours', 'Nightlife'],
+        pics: ['https://upload.wikimedia.org/wikipedia/commons/0/02/Grand_Palace_Bangkok.jpg','https://upload.wikimedia.org/wikipedia/commons/8/85/Floating_market_Bangkok.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e3/Khao_San_Road_night.jpg']
+      }
+    ];
 
     function scoreDestination(dest, choices){
       let score = 0;
@@ -348,4 +367,5 @@
   </script>
 </body>
 </html>
+
 
