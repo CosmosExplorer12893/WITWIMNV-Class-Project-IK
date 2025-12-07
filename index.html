@@ -1,1 +1,417 @@
 <!-- Here is the work for my class project: Where in the World is My Next Vacation? -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vacation Finder — GitHub Pages Ready</title>
+  <style>
+    :root{
+      --accent:#00aaff;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --bg:#f3f6fb;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#0f172a}
+    .container{max-width:1100px;margin:28px auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px}
+    header h1{margin:0;font-size:1.6rem}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.95));border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(17,24,39,0.06);}
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    label{display:block;font-weight:600;margin-bottom:8px}
+    select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;background:white}
+    .full{grid-column:1/-1}
+
+    .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px}
+    .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(0,170,255,0.18)}
+    .btn-ghost{background:transparent;border:1px solid #dbe9fb;color:var(--accent)}
+
+    /* Result page */
+    .result{display:none;margin-top:20px;padding:20px;border-radius:12px;background:linear-gradient(90deg,#ffffff,#f9fdff);}
+    .destination-title{text-align:center;font-size:2rem;font-weight:900;margin:6px}
+    .result-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+
+    /* map container */
+    .map-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #e6eef8}
+    .map-wrap img{width:100%;height:auto;display:block}
+    .marker{position:absolute;transform:translate(-50%,-100%);width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,rgba(255,255,255,0) 40%),var(--accent);box-shadow:0 6px 18px rgba(0,170,255,0.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    .marker::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);width:2px;height:34px;background:linear-gradient(180deg,rgba(10,10,10,0.06),rgba(10,10,10,0.12));}
+
+    .info{padding:12px}
+    .stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef6fb}
+    .currency-table{margin-top:12px;border-radius:8px;border:1px solid #eef6fb;padding:10px;background:white}
+    footer{margin-top:26px;text-align:center;color:var(--muted);font-size:0.9rem}
+
+    /* responsiveness */
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .result-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 18px;">
+        <img src="https://raw.githubusercontent.com/github/explore/main/topics/travel/travel.png" alt="travel" style="width:44px;height:44px;object-fit:contain;">
+        <div>
+          <h1>Vacation Finder</h1>
+          <div style="color:var(--muted);font-size:0.9rem">Answer a few quick questions and we'll recommend a destination — ready for GitHub Pages</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="card" style="margin-top:18px">
+      <form id="finderForm">
+        <div class="grid">
+          <div>
+            <label for="hemisphere">What hemisphere of the world would you like to go to?</label>
+            <select id="hemisphere" required>
+              <option value="">Select a hemisphere</option>
+              <option>Northern</option>
+              <option>Southern</option>
+              <option>Eastern</option>
+              <option>Western</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="climate">What climate/type of weather would you like?</label>
+            <select id="climate" required>
+              <option value="">Select a climate</option>
+              <option>Warmer</option>
+              <option>Cooler</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="season">What season of the year would you be going on this vacation?</label>
+            <select id="season" required>
+              <option value="">Select a season</option>
+              <option>Winter</option>
+              <option>Spring</option>
+              <option>Summer</option>
+              <option>Fall</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="duration">How long would you like to stay?</label>
+            <select id="duration" required>
+              <option value="">Select duration</option>
+              <option>A day</option>
+              <option>A few days</option>
+              <option>A week</option>
+              <option>2 weeks</option>
+              <option>3 weeks</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="type">Specific type of place?</label>
+            <select id="type" required>
+              <option value="">Select place type</option>
+              <option>Theme Park</option>
+              <option>Resort</option>
+              <option>Carnival</option>
+              <option>None</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="budget">How much do you generally want to spend on this vacation?</label>
+            <select id="budget" required>
+              <option value="">Select budget</option>
+              <option>&lt;$1000</option>
+              <option>$1000-$2000</option>
+              <option>$2000-$3000</option>
+              <option>$3000-$4000</option>
+              <option>$4000-$5000</option>
+              <option>$5000-$10000</option>
+              <option>&gt;$10000</option>
+            </select>
+          </div>
+
+          <div class="full" style="margin-top:6px">
+            <div style="color:var(--muted);font-size:0.95rem;">Tip: You can tweak the list of destinations and exchange rates in the JavaScript array at the bottom of this file to better match your needs.</div>
+          </div>
+
+          <div class="full actions">
+            <button type="button" id="resetBtn" class="btn btn-ghost">Reset</button>
+            <button type="submit" class="btn btn-primary">Show My Vacation</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- result area -->
+      <section id="result" class="result">
+        <div class="destination-title" id="destTitle">Your destination</div>
+        <div class="result-grid">
+          <div>
+            <div class="map-wrap">
+              <img id="worldMap" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" alt="World map reference">
+              <!-- marker will be appended here -->
+            </div>
+            <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+              <div style="flex:1" class="card info">
+                <div style="font-weight:800">Destination Info</div>
+                <div id="destDetails" style="color:var(--muted);margin-top:6px"></div>
+              </div>
+
+              <div style="width:240px" class="card info">
+                <div style="font-weight:800">Estimated Cost</div>
+                <div id="costDetails" style="color:var(--muted);margin-top:6px"></div>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card info">
+              <div style="font-weight:800">Quick Stats</div>
+              <div class="stat"><div>Length</div><div id="statDuration"></div></div>
+              <div class="stat"><div>Climate</div><div id="statClimate"></div></div>
+              <div class="stat"><div>Season</div><div id="statSeason"></div></div>
+              <div class="stat"><div>Type</div><div id="statType"></div></div>
+              <div class="stat"><div>Currency</div><div id="statCurrency"></div></div>
+
+              <div class="currency-table" id="currencyTable">
+                <strong>Conversion (1 USD →)</strong>
+                <div id="convList" style="margin-top:8px;color:var(--muted)"></div>
+              </div>
+
+              <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:flex-end">
+                <button id="editBtn" class="btn">Edit Answers</button>
+                <button id="newBtn" class="btn btn-primary">Find Another</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <footer>Built for GitHub Pages — single-file HTML. Update destinations & exchange rates inside the JS section.</footer>
+    </main>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Simple 'database' of destinations.
+    // Each destination has: name, hemisphere (array), climate, seasons (array), durations (array), types (array), avgCostPerDayUSD, country, currency, coords (percent x,y on the provided map image)
+    // The coords are approximate and used to position a marker over the provided world map image.
+    // -----------------------------
+    const DESTINATIONS = [
+      // Added `features` array for each destination
+      {name:'Reykjavik, Iceland',hemisphere:['Northern','Eastern','Western'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week'],types:['None','Resort'],avgPerDay:230,country:'Iceland',currency:'ISK',coords:{x:50,y:18},features:['Northern Lights','Geothermal spas','Black sand beaches','Volcano landscapes','Midnight sun']},
+      {name:'Cancún, Mexico',hemisphere:['Northern','Western'],climate:'Warmer',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week','2 weeks'],types:['Resort','Theme Park','None'],avgPerDay:180,country:'Mexico',currency:'MXN',coords:{x:38,y:33},features:['White sand beaches','Mayan ruins','All-inclusive resorts','Snorkeling & diving','Nightlife']},
+      {name:'Paris, France',hemisphere:['Northern','Eastern','Western'],climate:'Cooler',seasons:['Spring','Summer','Fall','Winter'],durations:['A few days','A week'],types:['None','Carnival'],avgPerDay:240,country:'France',currency:'EUR',coords:{x:48,y:22},features:['Eiffel Tower','World-class museums','Historic architecture','Cafés & cuisine','Romantic atmosphere']},
+      {name:'Tokyo, Japan',hemisphere:['Northern','Eastern'],climate:'Warmer',seasons:['Spring','Summer','Fall'],durations:['A few days','A week','2 weeks'],types:['Theme Park','None'],avgPerDay:260,country:'Japan',currency:'JPY',coords:{x:78,y:30},features:['Anime & pop culture','Advanced tech','Cherry blossoms','Temples & shrines','Theme parks']},
+      {name:'Cape Town, South Africa',hemisphere:['Southern','Eastern','Western'],climate:'Cooler',seasons:['Summer','Fall','Spring'],durations:['A few days','A week','2 weeks'],types:['None','Resort'],avgPerDay:140,country:'South Africa',currency:'ZAR',coords:{x:60,y:73},features:['Table Mountain','Beaches','Wildlife','Wine regions','Outdoor adventure']},
+      {name:'Bali, Indonesia',hemisphere:['Southern','Eastern'],climate:'Warmer',seasons:['Summer','Fall','Spring'],durations:['A few days','A week','2 weeks','3 weeks'],types:['Resort','None'],avgPerDay:110,country:'Indonesia',currency:'IDR',coords:{x:82,y:54},features:['Tropical beaches','Rainforests','Rice terraces','Resorts','Snorkeling']},
+      {name:'Queenstown, New Zealand',hemisphere:['Southern','Eastern','Western'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week','2 weeks'],types:['Resort','None'],avgPerDay:200,country:'New Zealand',currency:'NZD',coords:{x:91,y:86},features:['Adventure sports','Lakes','Mountains','Nature trails','Scenic views']},
+      {name:'Dubai, UAE',hemisphere:['Northern','Eastern'],climate:'Warmer',seasons:['Winter','Spring','Fall'],durations:['A few days','A week','2 weeks'],types:['Resort','Theme Park'],avgPerDay:320,country:'UAE',currency:'AED',coords:{x:66,y:32},features:['Luxury resorts','Skyscrapers','Desert safaris','Theme parks','Shopping malls']},
+      {name:'Machu Picchu, Peru',hemisphere:['Southern','Western'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week'],types:['None'],avgPerDay:150,country:'Peru',currency:'PEN',coords:{x:24,y:51},features:['Ancient ruins','Mountain hiking','Cultural heritage','Scenic valleys','Unique architecture']},
+      {name:'Orlando, USA (Theme Parks)',hemisphere:['Northern','Western'],climate:'Warmer',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week','2 weeks'],types:['Theme Park','Resort'],avgPerDay:300,country:'United States',currency:'USD',coords:{x:42,y:36},features:['Disney World','Universal Studios','Water parks','Warm weather','Resorts']},
+      {name:'Santorini, Greece',hemisphere:['Northern','Eastern','Western'],climate:'Warmer',seasons:['Spring','Summer','Fall'],durations:['A few days','A week'],types:['Resort','None'],avgPerDay:210,country:'Greece',currency:'EUR',coords:{x:54,y:29},features:['White-washed villages','Sunset views','Mediterranean beaches','Romantic setting','Volcanic cliffs']},
+      {name:'Rio de Janeiro, Brazil',hemisphere:['Southern','Western','Eastern'],climate:'Warmer',seasons:['Summer','Fall','Spring'],durations:['A few days','A week','2 weeks'],types:['Carnival','Resort','None'],avgPerDay:160,country:'Brazil',currency:'BRL',coords:{x:32,y:61},features:['Carnival','Beaches','Mountains','Nightlife','Christ the Redeemer']},
+      {name:'Vancouver, Canada',hemisphere:['Northern','Western','Eastern'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week'],types:['None','Resort'],avgPerDay:220,country:'Canada',currency:'CAD',coords:{x:28,y:20},features:['Mountain views','Harborfront','Nature parks','Mild climate','Outdoor culture']}
+    ];
+
+    // Sample exchange rates (1 USD -> X local). These are example rates and should be updated for production.
+    const EXCHANGE_RATES = {
+      'EUR': 0.92,
+      'GBP': 0.78,
+      'JPY': 155,
+      'MXN': 18.8,
+      'CAD': 1.36,
+      'AUD': 1.58,
+      'INR': 83.5,
+      'CNY': 7.27,
+      'NZD': 1.65,
+      'ZAR': 18.1,
+      'BRL': 5.12,
+      'PEN': 3.80,
+      'AED': 3.67,
+      'IDR': 15600,
+      'USD': 1
+    };
+
+    // helper to map duration into multiplier for days
+    const DURATION_DAYS = {
+      'A day': 1,
+      'A few days': 3,
+      'A week': 7,
+      '2 weeks': 14,
+      '3 weeks': 21
+    };
+
+    const form = document.getElementById('finderForm');
+    const result = document.getElementById('result');
+    const destTitle = document.getElementById('destTitle');
+    const destDetails = document.getElementById('destDetails');
+    const costDetails = document.getElementById('costDetails');
+    const convList = document.getElementById('convList');
+    const statDuration = document.getElementById('statDuration');
+    const statClimate = document.getElementById('statClimate');
+    const statSeason = document.getElementById('statSeason');
+    const statType = document.getElementById('statType');
+    const statCurrency = document.getElementById('statCurrency');
+    const worldMap = document.getElementById('worldMap');
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click',()=>{form.reset();result.style.display='none';clearMarker();})
+
+    // Edit & New buttons
+    document.getElementById('editBtn').addEventListener('click',()=>{result.style.display='none'})
+    document.getElementById('newBtn').addEventListener('click',()=>{form.reset();result.style.display='none';clearMarker();})
+
+    function clearMarker(){const old = document.querySelectorAll('.marker');old.forEach(n=>n.remove())}
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      // gather answers
+      const answers = {
+        hemisphere: document.getElementById('hemisphere').value,
+        climate: document.getElementById('climate').value,
+        season: document.getElementById('season').value,
+        duration: document.getElementById('duration').value,
+        type: document.getElementById('type').value,
+        budget: document.getElementById('budget').value
+      };
+
+      // score each destination
+      const scored = DESTINATIONS.map(dest=>{
+        let score=0;
+        if(dest.hemisphere.includes(answers.hemisphere)) score+=3;
+        if(dest.climate===answers.climate) score+=2;
+        if(dest.seasons.includes(answers.season)) score+=2;
+        if(dest.durations.includes(answers.duration)) score+=1.5;
+        if(dest.types.includes(answers.type)) score+=1.5;
+
+        // budget compatibility: crude check based on avgPerDay * days
+        const days = DURATION_DAYS[answers.duration] || 3;
+        const estTotal = dest.avgPerDay * days;
+        const budgetMatch = budgetFits(answers.budget, estTotal);
+        if(budgetMatch) score+=2;
+
+        // small tiebreakers for better matching
+        return {...dest,score,estTotal};
+      });
+
+      scored.sort((a,b)=>b.score - a.score || a.estTotal - b.estTotal);
+      const pick = scored[0];
+      showResult(pick, answers);
+    })
+
+    function budgetFits(budgetLabel, totalUSD){
+      if(budgetLabel === '<$1000') return totalUSD < 1000;
+      if(budgetLabel === '$1000-$2000') return totalUSD >=1000 && totalUSD <=2000;
+      if(budgetLabel === '$2000-$3000') return totalUSD >=2000 && totalUSD <=3000;
+      if(budgetLabel === '$3000-$4000') return totalUSD >=3000 && totalUSD <=4000;
+      if(budgetLabel === '$4000-$5000') return totalUSD >=4000 && totalUSD <=5000;
+      if(budgetLabel === '$5000-$10000') return totalUSD >=5000 && totalUSD <=10000;
+      if(budgetLabel === '>$10000') return totalUSD > 10000;
+      return false;
+    }
+
+    function showResult(dest,answers){
+      if(!dest) return alert('No matches found — try different options');
+      destTitle.textContent = dest.name;
+      // Added features list
+      destDetails.innerHTML = `Country: <strong>${dest.country}</strong><br>Typical daily cost (est): <strong>$${dest.avgPerDay.toFixed(0)} / day</strong><br>Best seasons: ${dest.seasons.join(', ')}<br><br><strong>Top features:</strong><ul>${dest.features.map(f=>`<li>${f}</li>`).join('')}</ul>.join(', ')}`;
+
+      // compute cost
+      const days = DURATION_DAYS[answers.duration] || 3;
+      const baseCost = dest.avgPerDay * days;
+      const flightEstimate = estimateFlightCost(dest.country);
+      const totalEst = Math.round((baseCost + flightEstimate));
+
+      // Updated to show flight vs local spending
+      costDetails.innerHTML = `Local spending (stay + food + activities): <strong>$${baseCost.toLocaleString()}</strong><br>Travel / flight cost: <strong>$${flightEstimate.toLocaleString()}</strong><hr><div style="font-weight:800;margin-top:6px">Estimated total: $${totalEst.toLocaleString()}</div>`;
+
+      // stats
+      statDuration.textContent = answers.duration;
+      statClimate.textContent = answers.climate;
+      statSeason.textContent = answers.season;
+      statType.textContent = answers.type;
+      statCurrency.textContent = dest.currency;
+
+      // currency conversions
+      convList.innerHTML = '';
+      const ratesToShow = ['USD','EUR','GBP','JPY','MXN','CAD','AUD','CNY','INR','BRL','ZAR','IDR'];
+      ratesToShow.forEach(code=>{
+        const rate = EXCHANGE_RATES[code] || null;
+        if(rate){
+          const converted = (1 * rate).toLocaleString();
+          const div = document.createElement('div');
+          div.textContent = `${code}: ${converted}`;
+          convList.appendChild(div);
+        }
+      })
+
+      // add map marker
+      clearMarker();
+      addMarker(dest.coords.x,dest.coords.y,dest.name);
+
+      result.style.display='block';
+      // smooth scroll into view
+      result.scrollIntoView({behavior:'smooth'});
+    }
+
+    function estimateFlightCost(country){
+      // VERY rough flight estimate based on broad region; for production, use real APIs
+      const regionCosts = {
+        'United States': 300,
+        'Canada': 400,
+        'Mexico': 500,
+        'France': 800,
+        'Japan': 1200,
+        'India': 1100,
+        'Brazil': 900,
+        'Australia': 1500,
+        'New Zealand': 1600,
+        'Indonesia': 1200,
+        'UAE': 900,
+        'Peru': 900,
+        'Iceland': 900,
+        'South Africa': 1000
+      }
+      return regionCosts[country] || 1000;
+    }
+
+    function addMarker(xPercent,yPercent,label){
+      const wrap = document.querySelector('.map-wrap');
+      const marker = document.createElement('div');
+      marker.className='marker';
+      marker.style.left = xPercent + '%';
+      marker.style.top = yPercent + '%';
+      marker.title = label;
+      marker.textContent = '★';
+      wrap.appendChild(marker);
+
+      // make marker clickable to show a tiny tooltip
+      marker.addEventListener('mouseenter',()=>{
+        const t = document.createElement('div');
+        t.className='tip';
+        t.style.position='absolute';
+        t.style.left='calc(' + xPercent + '% + 22px)';
+        t.style.top='calc(' + yPercent + '% - 6px)';
+        t.style.background='white';
+        t.style.padding='6px 8px';
+        t.style.borderRadius='8px';
+        t.style.boxShadow='0 8px 20px rgba(2,6,23,0.08)';
+        t.textContent = label;
+        t.id='tmpTip';
+        wrap.appendChild(t);
+      })
+      marker.addEventListener('mouseleave',()=>{const t=document.getElementById('tmpTip');if(t) t.remove();})
+    }
+
+    // Accessibility: allow pressing Enter to submit if focused on selects
+    Array.from(document.querySelectorAll('select')).forEach(s=>s.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();form.requestSubmit()}}))
+  </script>
+</body>
+</html>
+
