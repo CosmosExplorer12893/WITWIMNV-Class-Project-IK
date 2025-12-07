@@ -167,12 +167,12 @@ const DESTINATIONS = [
   {id:'cancun',title:'Cancún, Mexico',country:'Mexico',hemisphere:'northern western',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['week','2weeks','3weeks'],currency:'MXN',x:18,y:63, features:['Beaches','Mayan ruins','Snorkeling','Nightlife']}
 ];
 
-function scoreDestination(dest,choices){
-  let score=0;
-  if(dest.hemisphere.includes(choices.hemisphere)) score+=3;
-  if(dest.climate===choices.climate) score+=2;
-  if(dest.seasons.includes(choices.season)) score+=1;
-  if(dest.stay.includes(choices.stay)) score+=1;
+function scoreDestination(dest, choices) {
+  let score = 0;
+  if (dest.hemisphere.includes(choices.hemisphere)) score += 3;
+  if (dest.climate === choices.climate) score += 2;
+  if (dest.seasons.includes(choices.season)) score += 1;
+  if (dest.stay.includes(choices.stay)) score += 1;
   return score;
 }
 
@@ -180,42 +180,63 @@ const showBtn = document.getElementById('showBtn');
 const redoBtn = document.getElementById('redoBtn');
 
 showBtn.addEventListener('click', onShow);
-redoBtn.addEventListener('click', () => {
-    document.getElementById
+redoBtn.addEventListener('click', onTryAgain);
 
-function onShow(){
-  const hemisphere=document.getElementById('hemisphere').value;
-  const climate=document.getElementById('climate').value;
-  const season=document.getElementById('season').value;
-  const stay=document.getElementById('stay').value;
-  const budget=document.getElementById('budget').value;
-  if(!hemisphere||!climate||!season||!stay||!budget){alert("Please answer all questions."); return;}
-  const choices={hemisphere,climate,season,stay};
-  const scored=DESTINATIONS.map(d=>({d,score:scoreDestination(d,choices)}));
-  scored.sort((a,b)=>b.score-a.score);
-  const winner=scored[0].d;
+function onShow() {
+    const hemisphere = document.getElementById('hemisphere').value;
+    const climate = document.getElementById('climate').value;
+    const season = document.getElementById('season').value;
+    const stay = document.getElementById('stay').value;
+    const budget = document.getElementById('budget').value;
 
-  document.getElementById('resultTitle').textContent=winner.title;
+    if (!hemisphere || !climate || !season || !stay || !budget) {
+        alert("Please answer all questions.");
+        return;
+    }
 
-  const mapWrap=document.getElementById('mapWrap');
-  mapWrap.querySelectorAll('.pin').forEach(p=>p.remove());
-  const pin=document.createElement('div'); pin.className='pin';
-  pin.style.left=winner.x+'%'; pin.style.top=winner.y+'%';
-  pin.innerHTML='<div class="dot"></div><div class="tail"></div>';
-  mapWrap.appendChild(pin);
+    const choices = { hemisphere, climate, season, stay };
+    const scored = DESTINATIONS.map(d => ({ d, score: scoreDestination(d, choices) }));
+    scored.sort((a, b) => b.score - a.score);
+    const winner = scored[0].d;
 
-  const usd=BUDGET_MAP[budget];
-  document.getElementById('usdEstimate').textContent='$'+usd.toLocaleString();
-  const rate=EXCHANGE_RATES[winner.currency];
-  document.getElementById('convRate').textContent='1 USD = '+rate.toLocaleString()+' '+winner.currency;
-  document.getElementById('localEstimate').textContent=(usd*rate).toLocaleString()+' '+winner.currency;
+    document.getElementById('resultTitle').textContent = winner.title;
 
-  const featuresList=document.getElementById('featuresList');
-  featuresList.innerHTML='';
-  winner.features.forEach(f=>{const li=document.createElement('li'); li.textContent=f; featuresList.appendChild(li);});
+    const mapWrap = document.getElementById('mapWrap');
+    mapWrap.querySelectorAll('.pin').forEach(p => p.remove());
+    const pin = document.createElement('div'); 
+    pin.className = 'pin';
+    pin.style.left = winner.x + '%'; 
+    pin.style.top = winner.y + '%';
+    pin.innerHTML = '<div class="dot"></div><div class="tail"></div>';
+    mapWrap.appendChild(pin);
 
-  document.getElementById('vacForm').style.display='none';
-  document.getElementById('results').style.display='block';
+    const usd = BUDGET_MAP[budget];
+    document.getElementById('usdEstimate').textContent = '$' + usd.toLocaleString();
+    const rate = EXCHANGE_RATES[winner.currency];
+    document.getElementById('convRate').textContent = '1 USD = ' + rate.toLocaleString() + ' ' + winner.currency;
+    document.getElementById('localEstimate').textContent = (usd * rate).toLocaleString() + ' ' + winner.currency;
+
+    const featuresList = document.getElementById('featuresList');
+    featuresList.innerHTML = '';
+    winner.features.forEach(f => {
+        const li = document.createElement('li'); 
+        li.textContent = f; 
+        featuresList.appendChild(li);
+    });
+
+    document.getElementById('vacForm').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+}
+
+function onTryAgain() {
+    document.getElementById('vacForm').reset();
+    document.getElementById('mapWrap').querySelectorAll('.pin').forEach(p => p.remove());
+    document.getElementById('featuresList').innerHTML = '';
+    document.getElementById('usdEstimate').textContent = '$0';
+    document.getElementById('convRate').textContent = '—';
+    document.getElementById('localEstimate').textContent = '—';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('vacForm').style.display = 'block';
 }
 </script>
 </body>
