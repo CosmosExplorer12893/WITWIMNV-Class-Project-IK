@@ -3,207 +3,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Where in the World is My Next Vacation?</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #e8f4ff;
-            color: #003366;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            background: #ffffff;
-            padding: 15px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-        }
-
-        h1 {
-            font-size: 28px;
-            margin: 0;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .question {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        select {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #aaccee;
-            background: #f8fcff;
-        }
-
-        button {
-            padding: 12px 20px;
-            background: #007BFF;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #results-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        #destination-title {
-            text-align: center;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        #map-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 10px;
-            border: 2px solid #aaccee;
-        }
-
-        #world-map {
-            width: 100%;
-        }
-
-        .star {
-            position: absolute;
-            font-size: 24px;
-            color: red;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.6; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vacation Finder</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        width: 90%;
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+    }
+    .question {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    select {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    button {
+        padding: 12px 20px;
+        background: #007BFF;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #results {
+        margin-top: 30px;
+        display: none;
+    }
+    #results h2 {
+        text-align: center;
+    }
+    #features-list li {
+        margin-bottom: 6px;
+    }
+</style>
 </head>
 <body>
-    <header>
-        <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-            <circle cx="32" cy="32" r="30" fill="#66b3ff" stroke="#003366" stroke-width="3" />
-            <path d="M32 10 L42 32 L32 54 L22 32 Z" fill="#003366" />
-            <circle cx="32" cy="32" r="6" fill="white" />
-        </svg>
-        <h1>Where in the World is My Next Vacation?</h1>
-    </header>
+<div class="container">
+    <h1>Vacation Finder</h1>
 
-    <div class="container" id="form-section">
-        
+    <div id="form-section">
+        <div class="question">
+            <label>Hemisphere?</label>
+            <select id="hemisphere">
+                <option>Northern</option>
+                <option>Southern</option>
+                <option>Eastern</option>
+                <option>Western</option>
+            </select>
+        </div>
 
         <div class="question">
-            <label>Your budget?</label>
+            <label>Climate?</label>
+            <select id="climate">
+                <option>Warmer</option>
+                <option>Cooler</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <label>Season?</label>
+            <select id="season">
+                <option>Winter</option>
+                <option>Spring</option>
+                <option>Summer</option>
+                <option>Fall</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <label>Stay Length?</label>
+            <select id="stay">
+                <option>A day</option>
+                <option>A few days</option>
+                <option>A week</option>
+                <option>2 weeks</option>
+                <option>3 weeks</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <label>Budget?</label>
             <select id="budget">
-                <option><$1000</option>
+                <option>&lt;$1000</option>
                 <option>$1000-$2000</option>
                 <option>$2000-$3000</option>
                 <option>$3000-$4000</option>
                 <option>$4000-$5000</option>
                 <option>$5000-$10000</option>
-                <option>>$10000</option>
+                <option>&gt;$10000</option>
             </select>
         </div>
 
         <button onclick="showVacation()">Show My Vacation</button>
     </div>
 
-    <div class="container" id="results-section">
-        <div id="destination-title"></div>
+    <div id="results">
+        <h2 id="destination-title"></h2>
+        <img id="map" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" style="width:100%; border-radius:10px;" />
 
-        <div id="map-container">
-            <img id="world-map" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" />
-            <div id="star-marker" class="star" style="display:none;">★</div>
-        </div>
+        <h3>Estimated Costs</h3>
+        <p id="costs"></p>
 
-        <h2>Estimated Costs</h2>
-        <p id="cost-breakdown"></p>
+        <h3>Currency Conversion</h3>
+        <p id="currency"></p>
 
-        <h2>Currency Conversion</h2>
-        <p id="currency-output"></p>
-
-        <h2>Top Features</h2>
+        <h3>Top Features</h3>
         <ul id="features-list"></ul>
     </div>
+</div>
 
 <script>
-    const destinations = {
+    const data = {
         "Japan": {
-            coords: { x: 78, y: 40 },
             rate: 150,
-            features: ["Cherry blossoms", "Advanced technology", "Unique cuisine", "Clean, safe cities", "Beautiful shrines"]
+            flight: 900,
+            spend: 1000,
+            features: ["Cherry Blossoms", "Tokyo", "Cuisine", "Temples"]
         },
         "France": {
-            coords: { x: 49, y: 38 },
             rate: 0.92,
-            features: ["Eiffel Tower", "Romantic streets", "Fine dining", "Wine regions"]
+            flight: 700,
+            spend: 1200,
+            features: ["Eiffel Tower", "Wine", "Museums"]
         },
         "Brazil": {
-            coords: { x: 45, y: 62 },
             rate: 5.6,
-            features: ["Carnival", "Rainforests", "Beaches", "Soccer culture"]
+            flight: 600,
+            spend: 800,
+            features: ["Carnival", "Beaches", "Rainforest"]
         }
     };
 
     function showVacation() {
-        document.getElementById("form-section").style.display = "none";
-        document.getElementById("results-section").style.display = "block";
+        let chosen = "Japan"; // Placeholder default
+        let d = data[chosen];
 
-        let chosen = "Japan";
-        let data = destinations[chosen];
+        document.getElementById("form-section").style.display = "none";
+        document.getElementById("results").style.display = "block";
 
         document.getElementById("destination-title").innerText = chosen;
-
-        let star = document.getElementById("star-marker");
-        star.style.left = data.coords.x + "%";
-        star.style.top = data.coords.y + "%";
-        star.style.display = "block";
-
-        let flight = 900;
-        let spending = 1000;
-        document.getElementById("cost-breakdown").innerText = `Flight: $${flight} | Destination Spending: $${spending}`;
-
-        document.getElementById("currency-output").innerText = `1 USD ≈ ${data.rate} in local currency.`;
+        document.getElementById("costs").innerText = `Flight: $${d.flight} | Spending: $${d.spend}`;
+        document.getElementById("currency").innerText = `1 USD ≈ ${d.rate} local currency`;
 
         let list = document.getElementById("features-list");
         list.innerHTML = "";
-        data.features.forEach(f => {
+        d.features.forEach(f => {
             let li = document.createElement("li");
             li.innerText = f;
             list.appendChild(li);
         });
     }
 </script>
-</body></html>
+</body>
+</html>
