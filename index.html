@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Where Should I Go? — Vacation Recommender</title>
+<title>Where in the World is My Next Vacation?</title>
 <style>
 :root{
   --accent:#0288d1;
@@ -47,19 +47,17 @@ select, button{width:100%; padding:10px 12px; border-radius:8px; border:1px soli
 .stat .big{font-size:1.15rem; font-weight:700; color:#01579b;}
 .back{margin-top:12px; display:flex; justify-content:center; gap:8px;}
 .secondary{background:transparent; border:1px solid #90caf9; padding:10px 16px; border-radius:8px; cursor:pointer; color:var(--muted);}
-.primary{background:var(--accent); border:none; color:#fff; font-weight:700; cursor:pointer;}
+.primary{background:var(--accent); border:none; color:#fff; font-weight:700; cursor:pointer; font-size:1.15rem; padding:14px 16px;}
 .features-list{margin-top:12px;padding:10px;background:#f0f8ff;border-radius:8px;border:1px solid #90caf9;}
 .features-list ul{margin:0;padding-left:20px;}
-.destination-pics{display:flex; gap:8px; justify-content:center; margin-top:12px;}
-.destination-pics img{width:160px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #90caf9;}
 @media (max-width:980px){.grid{grid-template-columns:1fr}.map-wrap{height:340px;}}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-  <h1>Where Should I Go? — Vacation Recommender</h1>
-  <p>Answer the dropdowns and get a vacation suggestion with map, budget, features, and pictures.</p>
+  <h1>Where in the World is My Next Vacation?</h1>
+  <p>Answer the following quick questions and see where you will go next!</p>
 </header>
 
 <div class="grid">
@@ -117,10 +115,7 @@ select, button{width:100%; padding:10px 12px; border-radius:8px; border:1px soli
       </select>
       <div class="spacer"></div>
 
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <button id="showBtn" class="primary" type="button" style="flex:1;">Show My Vacation</button>
-        <button id="demoBtn" class="secondary" type="button">Surprise me</button>
-      </div>
+      <button id="showBtn" class="primary" type="button">Show My Vacation</button>
     </form>
   </section>
 
@@ -148,50 +143,28 @@ select, button{width:100%; padding:10px 12px; border-radius:8px; border:1px soli
     <strong>What to do / see:</strong>
     <ul id="featuresList"></ul>
   </div>
-  <div id="picsContainer" class="destination-pics"></div>
   <div class="back">
-    <button class="secondary" id="redoBtn">Try Another Destination</button>
-    <button class="secondary" id="backBtn">Back to form</button>
+    <button class="primary" id="redoBtn">Try Again</button>
   </div>
 </section>
 
-<footer>Built with ❤️ — map image used: mapsofworld.com</footer>
+<footer>Built by Github Pages, by Author Ian King. Map Image Credit: mapsofworld.com</footer>
 
 <script>
 const EXCHANGE_RATES = {"JPY":155,"EUR":0.86,"AUD":1.51,"BRL":5.44,"ZAR":16.93,"THB":31.88,"GBP":0.75,"CAD":1.38,"MXN":18.18,"USD":1};
 const BUDGET_MAP = {"<1000":700,"1000-2000":1500,"2000-3000":2500,"3000-4000":3500,"4000-5000":4500,"5000-10000":7500,">10000":12500};
 
 const DESTINATIONS = [
-  {id:'tokyo',title:'Tokyo, Japan',country:'Japan',hemisphere:'northern eastern',climate:'warmer',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks','3weeks'],currency:'JPY',x:82,y:36,
-    features:['Tokyo Disneyland & DisneySea','Historic temples','Modern shopping districts','Sushi and street food'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/1/16/Tokyo_Skyline_2020.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e4/Sensoji_Temple_Tokyo.jpg','https://upload.wikimedia.org/wikipedia/commons/0/0e/Shibuya_Crossing_2019.jpg']},
-  {id:'paris',title:'Paris, France',country:'France',hemisphere:'northern eastern',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'EUR',x:47,y:33,
-    features:['Eiffel Tower','Louvre Museum','Seine River cruises','French cuisine tasting'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/a/a6/Paris_vue_densemble_tour_Saint-Jacques.jpg','https://upload.wikimedia.org/wikipedia/commons/6/6d/Louvre_Museum_Wikimedia_Commons.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e6/Sacre_Coeur_Basilica_Paris.jpg']},
-  {id:'sydney',title:'Sydney, Australia',country:'Australia',hemisphere:'southern eastern',climate:'warmer',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks','3weeks'],currency:'AUD',x:82,y:80,
-    features:['Sydney Opera House','Bondi Beach','Harbour Bridge climb','Royal Botanic Garden'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/b/b0/Sydney_Opera_House_Sails.jpg','https://upload.wikimedia.org/wikipedia/commons/5/57/Bondi_Beach_from_cliff.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f9/Sydney_Harbour_Bridge_night.jpg']},
-  {id:'rio',title:'Rio de Janeiro, Brazil',country:'Brazil',hemisphere:'southern western',climate:'warmer',seasons:['Summer','Spring','Fall'],stay:['few','week','2weeks'],currency:'BRL',x:41,y:60,
-    features:['Christ the Redeemer','Copacabana Beach','Sugarloaf Mountain','Samba and Carnival'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/5/5b/Christ_the_Redeemer_-_Rio_de_Janeiro.jpg','https://upload.wikimedia.org/wikipedia/commons/7/73/Copacabana_Beach_Rio.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f8/Sugarloaf_Mountain_from_Urca_Hill.jpg']},
-  {id:'capetown',title:'Cape Town, South Africa',country:'South Africa',hemisphere:'southern eastern',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'ZAR',x:49,y:75,
-    features:['Table Mountain','Cape Point','V&A Waterfront','Winelands tours'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/3/30/Table_Mountain_Cape_Town.jpg','https://upload.wikimedia.org/wikipedia/commons/6/61/Cape_Point.jpg','https://upload.wikimedia.org/wikipedia/commons/4/4b/V&A_Waterfront_Cape_Town.jpg']},
-  {id:'nyc',title:'New York City, USA',country:'USA',hemisphere:'northern western',climate:'cooler',seasons:['Fall','Winter','Spring','Summer'],stay:['few','week'],currency:'USD',x:18,y:30,
-    features:['Statue of Liberty','Central Park','Broadway shows','Times Square'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/a/ab/Lower_Manhattan_skyline_-_June_2017.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f7/Central_Park_New_York_City.jpg','https://upload.wikimedia.org/wikipedia/commons/4/4c/Times_Square_by_night.jpg']},
-  {id:'bangkok',title:'Bangkok, Thailand',country:'Thailand',hemisphere:'northern eastern',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['few','week','2weeks'],currency:'THB',x:83,y:25,
-    features:['Grand Palace','Floating Markets','Street food tours','Nightlife'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/0/02/Grand_Palace_Bangkok.jpg','https://upload.wikimedia.org/wikipedia/commons/8/85/Floating_market_Bangkok.jpg','https://upload.wikimedia.org/wikipedia/commons/e/e3/Khao_San_Road_night.jpg']},
-  {id:'london',title:'London, UK',country:'UK',hemisphere:'northern western',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'GBP',x:45,y:28,
-    features:['Big Ben','Tower of London','British Museum','West End Theatre'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/5/5a/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall.JPG','https://upload.wikimedia.org/wikipedia/commons/3/3f/British_Museum_from_NE.jpg','https://upload.wikimedia.org/wikipedia/commons/f/f4/London_eye_Twilight.jpg']},
-  {id:'vancouver',title:'Vancouver, Canada',country:'Canada',hemisphere:'northern western',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'CAD',x:16,y:24,
-    features:['Stanley Park','Capilano Suspension Bridge','Grouse Mountain','Gastown'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/f/f7/Vancouver_Skyline.jpg','https://upload.wikimedia.org/wikipedia/commons/e/ee/Capilano_Suspension_Bridge_2017.jpg','https://upload.wikimedia.org/wikipedia/commons/2/28/Grouse_Mountain_Ski_Slope.jpg']},
-  {id:'cancun',title:'Cancún, Mexico',country:'Mexico',hemisphere:'northern western',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['week','2weeks','3weeks'],currency:'MXN',x:18,y:63,
-    features:['Beaches','Mayan ruins','Snorkeling','Nightlife'],
-    pics:['https://upload.wikimedia.org/wikipedia/commons/f/fb/Cancun_Beach.jpg','https://upload.wikimedia.org/wikipedia/commons/6/68/Chichen_Itza_Cenote.jpg','https://upload.wikimedia.org/wikipedia/commons/c/c3/Cancun_Hotel_Zone.jpg']}
+  {id:'tokyo',title:'Tokyo, Japan',country:'Japan',hemisphere:'northern eastern',climate:'warmer',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks','3weeks'],currency:'JPY',x:82,y:36, features:['Tokyo Disneyland & DisneySea','Historic temples','Modern shopping districts','Sushi and street food']},
+  {id:'paris',title:'Paris, France',country:'France',hemisphere:'northern eastern',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'EUR',x:47,y:33, features:['Eiffel Tower','Louvre Museum','Seine River cruises','French cuisine tasting']},
+  {id:'sydney',title:'Sydney, Australia',country:'Australia',hemisphere:'southern eastern',climate:'warmer',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks','3weeks'],currency:'AUD',x:82,y:80, features:['Sydney Opera House','Bondi Beach','Harbour Bridge climb','Royal Botanic Garden']},
+  {id:'rio',title:'Rio de Janeiro, Brazil',country:'Brazil',hemisphere:'southern western',climate:'warmer',seasons:['Summer','Spring','Fall'],stay:['few','week','2weeks'],currency:'BRL',x:41,y:60, features:['Christ the Redeemer','Copacabana Beach','Sugarloaf Mountain','Samba and Carnival']},
+  {id:'capetown',title:'Cape Town, South Africa',country:'South Africa',hemisphere:'southern eastern',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'ZAR',x:49,y:75, features:['Table Mountain','Cape Point','V&A Waterfront','Winelands tours']},
+  {id:'nyc',title:'New York City, USA',country:'USA',hemisphere:'northern western',climate:'cooler',seasons:['Fall','Winter','Spring','Summer'],stay:['few','week'],currency:'USD',x:18,y:30, features:['Statue of Liberty','Central Park','Broadway shows','Times Square']},
+  {id:'bangkok',title:'Bangkok, Thailand',country:'Thailand',hemisphere:'northern eastern',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['few','week','2weeks'],currency:'THB',x:83,y:25, features:['Grand Palace','Floating Markets','Street food tours','Nightlife']},
+  {id:'london',title:'London, UK',country:'UK',hemisphere:'northern western',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'GBP',x:45,y:28, features:['Big Ben','Tower of London','British Museum','West End Theatre']},
+  {id:'vancouver',title:'Vancouver, Canada',country:'Canada',hemisphere:'northern western',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'CAD',x:16,y:24, features:['Stanley Park','Capilano Suspension Bridge','Grouse Mountain','Gastown']},
+  {id:'cancun',title:'Cancún, Mexico',country:'Mexico',hemisphere:'northern western',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['week','2weeks','3weeks'],currency:'MXN',x:18,y:63, features:['Beaches','Mayan ruins','Snorkeling','Nightlife']}
 ];
 
 function scoreDestination(dest,choices){
@@ -204,14 +177,10 @@ function scoreDestination(dest,choices){
 }
 
 const showBtn=document.getElementById('showBtn');
-const demoBtn=document.getElementById('demoBtn');
-const backBtn=document.getElementById('backBtn');
 const redoBtn=document.getElementById('redoBtn');
 
 showBtn.addEventListener('click',onShow);
-demoBtn.addEventListener('click',onDemo);
-backBtn.addEventListener('click',()=>{document.getElementById('results').style.display='none';document.getElementById('vacForm').style.display='block';});
-redoBtn.addEventListener('click',()=>{onShow();});
+redoBtn.addEventListener('click',onShow);
 
 function onShow(){
   const hemisphere=document.getElementById('hemisphere').value;
@@ -227,7 +196,6 @@ function onShow(){
 
   document.getElementById('resultTitle').textContent=winner.title;
 
-  // map pin
   const mapWrap=document.getElementById('mapWrap');
   mapWrap.querySelectorAll('.pin').forEach(p=>p.remove());
   const pin=document.createElement('div'); pin.className='pin';
@@ -235,32 +203,19 @@ function onShow(){
   pin.innerHTML='<div class="dot"></div><div class="tail"></div>';
   mapWrap.appendChild(pin);
 
-  // Budget calculations
   const usd=BUDGET_MAP[budget];
   document.getElementById('usdEstimate').textContent='$'+usd.toLocaleString();
   const rate=EXCHANGE_RATES[winner.currency];
   document.getElementById('convRate').textContent='1 USD = '+rate.toLocaleString()+' '+winner.currency;
   document.getElementById('localEstimate').textContent=(usd*rate).toLocaleString()+' '+winner.currency;
 
-  // Features list
   const featuresList=document.getElementById('featuresList');
   featuresList.innerHTML='';
   winner.features.forEach(f=>{const li=document.createElement('li'); li.textContent=f; featuresList.appendChild(li);});
 
-  // Pictures
-  const picsContainer=document.getElementById('picsContainer');
-  picsContainer.innerHTML='';
-  winner.pics.forEach(src=>{const img=document.createElement('img'); img.src=src; picsContainer.appendChild(img);});
-
   document.getElementById('vacForm').style.display='none';
   document.getElementById('results').style.display='block';
-}
-
-function onDemo(){
-  const random=DESTINATIONS[Math.floor(Math.random()*DESTINATIONS.length)];
-  document.getElementById('previewTitle').textContent=random.title;
 }
 </script>
 </body>
 </html>
-
