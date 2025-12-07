@@ -5,69 +5,112 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vacation Finder — GitHub Pages Ready</title>
+  <title>Where in the World is My Next Vacation?</title>
   <style>
     :root{
-      --accent:#00aaff;
-      --muted:#6b7280;
+      --bg:#e9f6ff; /* light blue */
       --card:#ffffff;
-      --bg:#f3f6fb;
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --accent:#0077cc; /* primary blue */
+      --accent-strong:#005fa3;
+      --muted:#5b6b7a;
+      --glass: rgba(255,255,255,0.7);
+      --success:#07c;
+      --danger:#e02424;
+      color-scheme: light;
+      --radius:12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    html,body{height:100%;margin:0;background:var(--bg);color:#0f172a}
-    .container{max-width:1100px;margin:28px auto;padding:24px}
-    header{display:flex;align-items:center;gap:16px}
-    header h1{margin:0;font-size:1.6rem}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.95));border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(17,24,39,0.06);}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#f8fbff);color:#072035}
 
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    label{display:block;font-weight:600;margin-bottom:8px}
-    select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;background:white}
-    .full{grid-column:1/-1}
+    /* dark mode variables */
+    .dark{--bg:#071428;--card:#071a2b;--accent:#4fb3ff;--accent-strong:#3aa0ff;--muted:#9fb6cf;color-scheme: dark}
 
-    .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px}
+    /* container */
+    .app{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:14px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo svg{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-strong));padding:8px;box-shadow:0 8px 20px rgba(2,6,23,0.08)}
+    h1{margin:0;font-size:1.5rem}
+    p.lead{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* card */
+    .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 8px 28px rgba(2,6,23,0.06);}
+    .spaced{margin-top:14px}
+
+    /* form layout vertical */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-weight:700;margin-bottom:6px}
+    select,input[type=text]{padding:12px;border-radius:10px;border:1px solid rgba(7,32,53,0.06);background:transparent}
+
+    .actions{display:flex;gap:12px;justify-content:flex-end;margin-top:6px}
     .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
-    .btn-primary{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(0,170,255,0.18)}
-    .btn-ghost{background:transparent;border:1px solid #dbe9fb;color:var(--accent)}
+    .btn-primary{background:var(--accent);color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(7,32,53,0.06);color:var(--accent)}
 
-    /* Result page */
-    .result{display:none;margin-top:20px;padding:20px;border-radius:12px;background:linear-gradient(90deg,#ffffff,#f9fdff);}
-    .destination-title{text-align:center;font-size:2rem;font-weight:900;margin:6px}
-    .result-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+    /* two 'pages' */
+    .page{display:none}
+    .page.active{display:block}
 
-    /* map container */
-    .map-wrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid #e6eef8}
-    .map-wrap img{width:100%;height:auto;display:block}
-    .marker{position:absolute;transform:translate(-50%,-100%);width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,rgba(255,255,255,0) 40%),var(--accent);box-shadow:0 6px 18px rgba(0,170,255,0.3);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
-    .marker::after{content:'';position:absolute;left:50%;top:100%;transform:translateX(-50%);width:2px;height:34px;background:linear-gradient(180deg,rgba(10,10,10,0.06),rgba(10,10,10,0.12));}
+    /* result layout */
+    .result-grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:12px}
+    .map-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(7,32,53,0.06)}
+    .map-wrap img{width:100%;height:auto;display:block;transition:transform 0.35s ease}
+    .map-controls{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+    /* interactive marker */
+    .marker{position:absolute;transform:translate(-50%,-100%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:white}
+    .marker.star{background:var(--danger);box-shadow:0 8px 18px rgba(224,36,36,0.24);font-size:18px}
+    .marker.pulse{animation:ping 1.6s infinite}
+    @keyframes ping{0%{transform:translate(-50%,-100%) scale(1)}50%{transform:translate(-50%,-100%) scale(1.25)}100%{transform:translate(-50%,-100%) scale(1)} }
 
     .info{padding:12px}
-    .stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eef6fb}
-    .currency-table{margin-top:12px;border-radius:8px;border:1px solid #eef6fb;padding:10px;background:white}
-    footer{margin-top:26px;text-align:center;color:var(--muted);font-size:0.9rem}
+    .stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(7,32,53,0.04)}
+    .currency-table{margin-top:12px;border-radius:8px;border:1px solid rgba(7,32,53,0.04);padding:10px;background:linear-gradient(180deg,rgba(255,255,255,0.9),transparent)}
+
+    /* footer controls */
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:var(--muted);font-size:0.95rem}
+    .toggle{display:flex;align-items:center;gap:8px}
+    .switch{width:44px;height:24px;background:rgba(7,32,53,0.08);border-radius:999px;padding:3px;display:flex;align-items:center;cursor:pointer}
+    .switch .knob{width:18px;height:18px;border-radius:50%;background:white;box-shadow:0 6px 14px rgba(2,6,23,0.12);transition:transform 0.22s}
+    .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-strong))}
+    .switch.on .knob{transform:translateX(20px)}
 
     /* responsiveness */
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr}
-      .result-grid{grid-template-columns:1fr}
-    }
+    @media (max-width:900px){.result-grid{grid-template-columns:1fr}.map-wrap{height:320px}}
+
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="card" style="display:flex;align-items:center;gap:14px;padding:12px 18px;">
-        <img src="https://raw.githubusercontent.com/github/explore/main/topics/travel/travel.png" alt="travel" style="width:44px;height:44px;object-fit:contain;">
-        <div>
-          <h1>Vacation Finder</h1>
-          <div style="color:var(--muted);font-size:0.9rem">Answer a few quick questions and we'll recommend a destination — ready for GitHub Pages</div>
+  <div class="app">
+    <header style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="logo">
+            <!-- unique engaging logo: paper airplane + globe in SVG -->
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#6ad1ff"/><stop offset="1" stop-color="#0077cc"/></linearGradient>
+              </defs>
+              <rect width="64" height="64" rx="12" fill="url(#g1)" />
+              <g transform="translate(6,6)">
+                <path d="M2 30 L50 6 L34 28 L46 42 L26 28 L2 30 Z" fill="#fff" opacity="0.95"/>
+                <circle cx="36" cy="36" r="10" fill="rgba(255,255,255,0.12)" stroke="white" stroke-opacity="0.08"/>
+                <path d="M40 32 L44 28" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <h1>Where in the World is My Next Vacation?</h1>
+            <p class="lead">Answer a few questions and we'll recommend a perfect getaway.</p>
+          </div>
         </div>
       </div>
     </header>
 
-    <main class="card" style="margin-top:18px">
-      <form id="finderForm">
-        <div class="grid">
+    <!-- Page 1: the vertical form -->
+    <section id="page1" class="page active">
+      <main class="card">
+        <form id="finderForm">
           <div>
             <label for="hemisphere">What hemisphere of the world would you like to go to?</label>
             <select id="hemisphere" required>
@@ -136,35 +179,43 @@
             </select>
           </div>
 
-          <div class="full" style="margin-top:6px">
-            <div style="color:var(--muted);font-size:0.95rem;">Tip: You can tweak the list of destinations and exchange rates in the JavaScript array at the bottom of this file to better match your needs.</div>
-          </div>
-
-          <div class="full actions">
+          <div class="spaced actions">
             <button type="button" id="resetBtn" class="btn btn-ghost">Reset</button>
             <button type="submit" class="btn btn-primary">Show My Vacation</button>
           </div>
-        </div>
-      </form>
+        </form>
+      </main>
+    </section>
 
-      <!-- result area -->
-      <section id="result" class="result">
-        <div class="destination-title" id="destTitle">Your destination</div>
+    <!-- Page 2: Results -->
+    <section id="page2" class="page">
+      <main class="card">
+        <div style="text-align:center;margin-bottom:10px">
+          <div style="font-weight:900;font-size:1.6rem" id="destTitle">Your destination</div>
+          <div id="destSub" style="color:var(--muted);margin-top:6px"></div>
+        </div>
+
         <div class="result-grid">
           <div>
-            <div class="map-wrap">
-              <img id="worldMap" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" alt="World map reference">
-              <!-- marker will be appended here -->
+            <div class="map-wrap" id="mapWrap" style="min-height:420px">
+              <!-- interactive map: using the provided world image and CSS-based interactive techniques -->
+              <img id="worldMap" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" alt="World map">
             </div>
-            <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
-              <div style="flex:1" class="card info">
+            <div class="map-controls">
+              <button id="zoomIn" class="btn btn-ghost">Zoom In</button>
+              <button id="zoomOut" class="btn btn-ghost">Zoom Out</button>
+              <button id="resetMap" class="btn btn-ghost">Reset Map</button>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+              <div class="card info" style="flex:1">
                 <div style="font-weight:800">Destination Info</div>
-                <div id="destDetails" style="color:var(--muted);margin-top:6px"></div>
+                <div id="destDetails" style="color:var(--muted);margin-top:8px"></div>
               </div>
 
-              <div style="width:240px" class="card info">
+              <div class="card info" style="width:260px">
                 <div style="font-weight:800">Estimated Cost</div>
-                <div id="costDetails" style="color:var(--muted);margin-top:6px"></div>
+                <div id="costDetails" style="color:var(--muted);margin-top:8px"></div>
               </div>
             </div>
           </div>
@@ -184,26 +235,36 @@
               </div>
 
               <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:flex-end">
-                <button id="editBtn" class="btn">Edit Answers</button>
+                <button id="backBtn" class="btn">Edit Answers</button>
                 <button id="newBtn" class="btn btn-primary">Find Another</button>
               </div>
             </div>
           </aside>
         </div>
-      </section>
 
-      <footer>Built for GitHub Pages — single-file HTML. Update destinations & exchange rates inside the JS section.</footer>
-    </main>
+      </main>
+    </section>
+
+    <footer>
+      <div style="font-size:0.9rem;color:var(--muted)">Made with ♥ — Where in the World App</div>
+      <div class="toggle">
+        <div style="font-size:0.9rem;color:var(--muted)">Dark mode</div>
+        <div id="darkSwitch" class="switch" role="button" aria-pressed="false">
+          <div class="knob"></div>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <script>
     // -----------------------------
-    // Simple 'database' of destinations.
-    // Each destination has: name, hemisphere (array), climate, seasons (array), durations (array), types (array), avgCostPerDayUSD, country, currency, coords (percent x,y on the provided map image)
-    // The coords are approximate and used to position a marker over the provided world map image.
+    // Refactored single-file app implementing requested features
+    // Page toggles, vertical layout, interactive map (CSS transform zoom & marker focus), dark mode toggle
+    // Only shows relevant currency conversion for chosen destination
     // -----------------------------
+
+    // Destinations database (kept concise for readability)
     const DESTINATIONS = [
-      // Added `features` array for each destination
       {name:'Reykjavik, Iceland',hemisphere:['Northern','Eastern','Western'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week'],types:['None','Resort'],avgPerDay:230,country:'Iceland',currency:'ISK',coords:{x:50,y:18},features:['Northern Lights','Geothermal spas','Black sand beaches','Volcano landscapes','Midnight sun']},
       {name:'Cancún, Mexico',hemisphere:['Northern','Western'],climate:'Warmer',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week','2 weeks'],types:['Resort','Theme Park','None'],avgPerDay:180,country:'Mexico',currency:'MXN',coords:{x:38,y:33},features:['White sand beaches','Mayan ruins','All-inclusive resorts','Snorkeling & diving','Nightlife']},
       {name:'Paris, France',hemisphere:['Northern','Eastern','Western'],climate:'Cooler',seasons:['Spring','Summer','Fall','Winter'],durations:['A few days','A week'],types:['None','Carnival'],avgPerDay:240,country:'France',currency:'EUR',coords:{x:48,y:22},features:['Eiffel Tower','World-class museums','Historic architecture','Cafés & cuisine','Romantic atmosphere']},
@@ -219,37 +280,16 @@
       {name:'Vancouver, Canada',hemisphere:['Northern','Western','Eastern'],climate:'Cooler',seasons:['Winter','Spring','Summer','Fall'],durations:['A few days','A week'],types:['None','Resort'],avgPerDay:220,country:'Canada',currency:'CAD',coords:{x:28,y:20},features:['Mountain views','Harborfront','Nature parks','Mild climate','Outdoor culture']}
     ];
 
-    // Sample exchange rates (1 USD -> X local). These are example rates and should be updated for production.
-    const EXCHANGE_RATES = {
-      'EUR': 0.92,
-      'GBP': 0.78,
-      'JPY': 155,
-      'MXN': 18.8,
-      'CAD': 1.36,
-      'AUD': 1.58,
-      'INR': 83.5,
-      'CNY': 7.27,
-      'NZD': 1.65,
-      'ZAR': 18.1,
-      'BRL': 5.12,
-      'PEN': 3.80,
-      'AED': 3.67,
-      'IDR': 15600,
-      'USD': 1
-    };
+    const EXCHANGE_RATES = { 'EUR': 0.92,'GBP': 0.78,'JPY': 155,'MXN': 18.8,'CAD': 1.36,'AUD': 1.58,'INR': 83.5,'CNY': 7.27,'NZD': 1.65,'ZAR': 18.1,'BRL': 5.12,'PEN': 3.80,'AED': 3.67,'IDR': 15600,'USD': 1 };
 
-    // helper to map duration into multiplier for days
-    const DURATION_DAYS = {
-      'A day': 1,
-      'A few days': 3,
-      'A week': 7,
-      '2 weeks': 14,
-      '3 weeks': 21
-    };
+    const DURATION_DAYS = {'A day':1,'A few days':3,'A week':7,'2 weeks':14,'3 weeks':21};
 
+    // DOM
     const form = document.getElementById('finderForm');
-    const result = document.getElementById('result');
-    const destTitle = document.getElementById('destTitle');
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const resultTitle = document.getElementById('destTitle');
+    const destSub = document.getElementById('destSub');
     const destDetails = document.getElementById('destDetails');
     const costDetails = document.getElementById('costDetails');
     const convList = document.getElementById('convList');
@@ -259,53 +299,34 @@
     const statType = document.getElementById('statType');
     const statCurrency = document.getElementById('statCurrency');
     const worldMap = document.getElementById('worldMap');
+    const mapWrap = document.getElementById('mapWrap');
 
-    // Reset button
-    document.getElementById('resetBtn').addEventListener('click',()=>{form.reset();result.style.display='none';clearMarker();})
+    // map state
+    let mapScale = 1;
+    let currentMarker = null;
 
-    // Edit & New buttons
-    document.getElementById('editBtn').addEventListener('click',()=>{result.style.display='none'})
-    document.getElementById('newBtn').addEventListener('click',()=>{form.reset();result.style.display='none';clearMarker();})
+    function showPage(which){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById(which).classList.add('active');
+    }
 
-    function clearMarker(){const old = document.querySelectorAll('.marker');old.forEach(n=>n.remove())}
+    function clearMarker(){
+      const old = document.querySelectorAll('.marker'); old.forEach(n=>n.remove());
+      currentMarker = null;
+    }
 
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      // gather answers
-      const answers = {
-        hemisphere: document.getElementById('hemisphere').value,
-        climate: document.getElementById('climate').value,
-        season: document.getElementById('season').value,
-        duration: document.getElementById('duration').value,
-        type: document.getElementById('type').value,
-        budget: document.getElementById('budget').value
-      };
+    document.getElementById('resetBtn').addEventListener('click',()=>{form.reset();});
 
-      // score each destination
-      const scored = DESTINATIONS.map(dest=>{
-        let score=0;
-        if(dest.hemisphere.includes(answers.hemisphere)) score+=3;
-        if(dest.climate===answers.climate) score+=2;
-        if(dest.seasons.includes(answers.season)) score+=2;
-        if(dest.durations.includes(answers.duration)) score+=1.5;
-        if(dest.types.includes(answers.type)) score+=1.5;
+    document.getElementById('backBtn').addEventListener('click',()=>{showPage('page1');clearMarker();mapReset();});
+    document.getElementById('newBtn').addEventListener('click',()=>{form.reset();showPage('page1');clearMarker();mapReset();});
 
-        // budget compatibility: crude check based on avgPerDay * days
-        const days = DURATION_DAYS[answers.duration] || 3;
-        const estTotal = dest.avgPerDay * days;
-        const budgetMatch = budgetFits(answers.budget, estTotal);
-        if(budgetMatch) score+=2;
+    // zoom controls
+    document.getElementById('zoomIn').addEventListener('click',()=>{mapScale = Math.min(2.5,mapScale + 0.25); worldMap.style.transform = `scale(${mapScale})`;});
+    document.getElementById('zoomOut').addEventListener('click',()=>{mapScale = Math.max(1, mapScale - 0.25); worldMap.style.transform = `scale(${mapScale})`;});
+    document.getElementById('resetMap').addEventListener('click',mapReset);
+    function mapReset(){mapScale=1;worldMap.style.transform=`scale(1)`;mapWrap.scrollTop=0;mapWrap.scrollLeft=0;}
 
-        // small tiebreakers for better matching
-        return {...dest,score,estTotal};
-      });
-
-      scored.sort((a,b)=>b.score - a.score || a.estTotal - b.estTotal);
-      const pick = scored[0];
-      showResult(pick, answers);
-    })
-
-    function budgetFits(budgetLabel, totalUSD){
+    function budgetFits(budgetLabel,totalUSD){
       if(budgetLabel === '<$1000') return totalUSD < 1000;
       if(budgetLabel === '$1000-$2000') return totalUSD >=1000 && totalUSD <=2000;
       if(budgetLabel === '$2000-$3000') return totalUSD >=2000 && totalUSD <=3000;
@@ -316,102 +337,149 @@
       return false;
     }
 
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const answers = {hemisphere:document.getElementById('hemisphere').value,climate:document.getElementById('climate').value,season:document.getElementById('season').value,duration:document.getElementById('duration').value,type:document.getElementById('type').value,budget:document.getElementById('budget').value};
+
+      const scored = DESTINATIONS.map(dest=>{
+        let score=0;
+        if(dest.hemisphere.includes(answers.hemisphere)) score+=3;
+        if(dest.climate===answers.climate) score+=2;
+        if(dest.seasons.includes(answers.season)) score+=2;
+        if(dest.durations.includes(answers.duration)) score+=1.5;
+        if(dest.types.includes(answers.type)) score+=1.5;
+        const days = DURATION_DAYS[answers.duration] || 3;
+        const estTotal = dest.avgPerDay * days;
+        if(budgetFits(answers.budget, estTotal)) score+=2;
+        return {...dest,score,estTotal};
+      });
+
+      scored.sort((a,b)=>b.score - a.score || a.estTotal - b.estTotal);
+      const pick = scored[0];
+      if(!pick) return alert('No matches — try different options');
+      showResult(pick,answers);
+    });
+
     function showResult(dest,answers){
-      if(!dest) return alert('No matches found — try different options');
-      destTitle.textContent = dest.name;
-      // Added features list
-      destDetails.innerHTML = `Country: <strong>${dest.country}</strong><br>Typical daily cost (est): <strong>$${dest.avgPerDay.toFixed(0)} / day</strong><br>Best seasons: ${dest.seasons.join(', ')}<br><br><strong>Top features:</strong><ul>${dest.features.map(f=>`<li>${f}</li>`).join('')}</ul>.join(', ')}`;
+      // title & subtitle
+      resultTitleText = dest.name;
+      resultTitleText = dest.name;
+      resultTitle = document.getElementById('destTitle');
+      resultTitle.textContent = dest.name;
+      destSub.textContent = `${dest.country} — Top features listed below`;
 
-      // compute cost
+      // details & features
+      destDetails.innerHTML = `Country: <strong>${dest.country}</strong><br>Best seasons: ${dest.seasons.join(', ')}<br><br><strong>Top features:</strong><ol>${dest.features.slice(0,5).map(f=>`<li>${f}</li>`).join('')}</ol>`;
+
+      // compute costs
       const days = DURATION_DAYS[answers.duration] || 3;
-      const baseCost = dest.avgPerDay * days;
+      const baseCost = dest.avgPerDay * days; // local spending
       const flightEstimate = estimateFlightCost(dest.country);
-      const totalEst = Math.round((baseCost + flightEstimate));
+      const totalEst = Math.round(baseCost + flightEstimate);
 
-      // Updated to show flight vs local spending
-      costDetails.innerHTML = `Local spending (stay + food + activities): <strong>$${baseCost.toLocaleString()}</strong><br>Travel / flight cost: <strong>$${flightEstimate.toLocaleString()}</strong><hr><div style="font-weight:800;margin-top:6px">Estimated total: $${totalEst.toLocaleString()}</div>`;
+      costDetails.innerHTML = `Local spending (stay + food + activities): <strong>$${baseCost.toLocaleString()}</strong><br>Travel / flight cost: <strong>$${flightEstimate.toLocaleString()}</strong><hr style="margin:8px 0"><div style="font-weight:800">Estimated total: $${totalEst.toLocaleString()}</div>`;
 
-      // stats
+      // quick stats
       statDuration.textContent = answers.duration;
       statClimate.textContent = answers.climate;
       statSeason.textContent = answers.season;
       statType.textContent = answers.type;
       statCurrency.textContent = dest.currency;
 
-      // currency conversions
+      // currency conversions: show only relevant currency
       convList.innerHTML = '';
-      const ratesToShow = ['USD','EUR','GBP','JPY','MXN','CAD','AUD','CNY','INR','BRL','ZAR','IDR'];
-      ratesToShow.forEach(code=>{
-        const rate = EXCHANGE_RATES[code] || null;
-        if(rate){
-          const converted = (1 * rate).toLocaleString();
-          const div = document.createElement('div');
-          div.textContent = `${code}: ${converted}`;
-          convList.appendChild(div);
-        }
-      })
+      const code = dest.currency || 'USD';
+      const rate = EXCHANGE_RATES[code] || null;
+      if(rate){
+        convList.innerHTML = `1 USD → ${rate.toLocaleString()} ${code}`;
+      } else {
+        convList.innerHTML = `1 USD → 1 ${code} (rate not available)`;
+      }
 
-      // add map marker
+      // map marker
       clearMarker();
       addMarker(dest.coords.x,dest.coords.y,dest.name);
 
-      result.style.display='block';
-      // smooth scroll into view
-      result.scrollIntoView({behavior:'smooth'});
+      // show page 2
+      showPage('page2');
+
+      // attempt to center marker by scrolling
+      setTimeout(()=>{
+        centerMapOnPercent(dest.coords.x, dest.coords.y);
+      },300);
     }
 
     function estimateFlightCost(country){
-      // VERY rough flight estimate based on broad region; for production, use real APIs
-      const regionCosts = {
-        'United States': 300,
-        'Canada': 400,
-        'Mexico': 500,
-        'France': 800,
-        'Japan': 1200,
-        'India': 1100,
-        'Brazil': 900,
-        'Australia': 1500,
-        'New Zealand': 1600,
-        'Indonesia': 1200,
-        'UAE': 900,
-        'Peru': 900,
-        'Iceland': 900,
-        'South Africa': 1000
-      }
+      const regionCosts = {'United States':300,'Canada':400,'Mexico':500,'France':800,'Japan':1200,'India':1100,'Brazil':900,'Australia':1500,'New Zealand':1600,'Indonesia':1200,'UAE':900,'Peru':900,'Iceland':900,'South Africa':1000}
       return regionCosts[country] || 1000;
     }
 
     function addMarker(xPercent,yPercent,label){
-      const wrap = document.querySelector('.map-wrap');
+      const wrap = mapWrap;
       const marker = document.createElement('div');
-      marker.className='marker';
+      marker.className='marker star pulse';
       marker.style.left = xPercent + '%';
       marker.style.top = yPercent + '%';
       marker.title = label;
-      marker.textContent = '★';
+      marker.innerHTML = '★';
       wrap.appendChild(marker);
+      currentMarker = marker;
 
-      // make marker clickable to show a tiny tooltip
+      marker.addEventListener('click',()=>{
+        // quick bounce effect
+        marker.style.transform = 'translate(-50%,-100%) scale(1.2)';
+        setTimeout(()=>marker.style.transform='translate(-50%,-100%) scale(1)',220);
+      });
+
       marker.addEventListener('mouseenter',()=>{
         const t = document.createElement('div');
         t.className='tip';
         t.style.position='absolute';
-        t.style.left='calc(' + xPercent + '% + 22px)';
-        t.style.top='calc(' + yPercent + '% - 6px)';
-        t.style.background='white';
-        t.style.padding='6px 8px';
+        t.style.left='calc(' + xPercent + '% + 14px)';
+        t.style.top='calc(' + yPercent + '% - 8px)';
+        t.style.background= 'var(--card)';
+        t.style.padding='8px 10px';
         t.style.borderRadius='8px';
         t.style.boxShadow='0 8px 20px rgba(2,6,23,0.08)';
         t.textContent = label;
         t.id='tmpTip';
         wrap.appendChild(t);
-      })
+      });
+
       marker.addEventListener('mouseleave',()=>{const t=document.getElementById('tmpTip');if(t) t.remove();})
     }
 
-    // Accessibility: allow pressing Enter to submit if focused on selects
+    // center map box so the percentage point is visible; crude approach using scroll
+    function centerMapOnPercent(xPercent,yPercent){
+      // dimensions
+      const img = worldMap;
+      const wrap = mapWrap;
+      const rect = img.getBoundingClientRect();
+      const wrapRect = wrap.getBoundingClientRect();
+      // compute pixel target within image
+      const targetX = (xPercent/100) * img.width * mapScale;
+      const targetY = (yPercent/100) * img.height * mapScale;
+
+      // set scroll so target is centered in wrap
+      const scrollLeft = Math.max(0, targetX - (wrap.clientWidth/2));
+      const scrollTop = Math.max(0, targetY - (wrap.clientHeight/2));
+      wrap.scrollTo({left:scrollLeft,top:scrollTop,behavior:'smooth'});
+    }
+
+    // dark mode toggle
+    const darkSwitch = document.getElementById('darkSwitch');
+    darkSwitch.addEventListener('click',()=>{
+      const root = document.documentElement;
+      const on = darkSwitch.classList.toggle('on');
+      darkSwitch.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if(on) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
+    });
+
+    // accessibility: Enter on selects submits
     Array.from(document.querySelectorAll('select')).forEach(s=>s.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();form.requestSubmit()}}))
+
   </script>
 </body>
 </html>
+
 
