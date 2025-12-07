@@ -5,9 +5,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Where in the World is My Next Vacation</title>
+  <title>Where Should I Go? — Vacation Recommender</title>
   <style>
-    /* Updated color scheme: white/light blue, dark text */
     :root{
       --accent:#0288d1;
       --bg:#e0f7fa;
@@ -80,23 +79,30 @@
     }
     .map-wrap img{width:100%; height:100%; object-fit:cover; display:block}
     .pin{
-      position:absolute; width:28px; height:28px; transform:translate(-50%,-100%);
+      position:absolute; width:36px; height:36px; transform:translate(-50%,-100%);
       display:flex; align-items:center; justify-content:center; z-index:3;
       transition:transform .28s cubic-bezier(.2,.9,.2,1), opacity .2s;
       filter:drop-shadow(0 6px 18px rgba(0,0,0,0.3));
     }
-    .pin .dot{width:12px;height:12px;border-radius:50%;background:var(--accent); border:2px solid #021018}
+    .pin .dot{width:18px;height:18px;border-radius:50%;background:red; border:2px solid #fff}
     .pin .tail{position:absolute; bottom:-20px; width:2px; height:18px; background:rgba(0,0,0,0.1); left:50%; transform:translateX(-50%); border-radius:2px}
 
     .stats{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px}
     .stat{background:#f0f8ff; padding:10px 14px; border-radius:10px; min-width:160px; text-align:center}
     .stat .big{font-size:1.15rem; font-weight:700; color:#01579b}
 
-    .back{margin-top:12px; display:flex; justify-content:center}
+    .back{margin-top:12px; display:flex; justify-content:center; gap:8px}
     .secondary{background:transparent; border:1px solid #90caf9; padding:10px 16px; border-radius:8px; cursor:pointer; color:var(--muted)}
     .primary{background:var(--accent); border:none; color:#fff; font-weight:700; cursor:pointer}
 
     footer{margin-top:14px; color:var(--muted); font-size:0.85rem; text-align:center}
+
+    /* Features list and pictures */
+    .features-list{margin-top:12px;padding:10px;background:#f0f8ff;border-radius:8px;border:1px solid #90caf9;}
+    .features-list ul{margin:0;padding-left:20px;}
+    .destination-pics{display:flex; gap:8px; justify-content:center; margin-top:12px;}
+    .destination-pics img{width:160px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #90caf9;}
+
     @media (max-width:980px){
       .grid{grid-template-columns:1fr}
       .map-wrap{height:340px}
@@ -107,8 +113,8 @@
   <div class="container" role="main" aria-labelledby="title">
     <header>
       <div>
-        <h1 id="title">Where in the World is My Next Vacation</h1>
-        <p>Answer a few quick questions, and this application will tell you where your own type of paradise is in the world!</p>
+        <h1 id="title">Where Should I Go? — Vacation Recommender</h1>
+        <p>Answer a few quick dropdowns and the app will suggest a destination, show it on the world map, estimate your spend, and convert USD.</p>
       </div>
     </header>
 
@@ -240,53 +246,34 @@
         </div>
       </div>
 
-      <div style="margin-top:12px; text-align:center;" id="countryBlurb"></div>
+      <!-- Features list -->
+      <div id="featuresContainer" class="features-list">
+        <strong>What to do / see:</strong>
+        <ul id="featuresList"></ul>
+      </div>
 
-      <div class="back">
+      <!-- Pictures -->
+      <div id="picsContainer" class="destination-pics"></div>
+
+      <!-- Redo button -->
+      <div class="back" style="margin-top: 12px;">
+        <button class="secondary" id="redoBtn">Try Another Destination</button>
         <button class="secondary" id="backBtn">Back to form</button>
       </div>
+
     </section>
 
     <footer>Built with ❤️ — map image used: <em>mapsofworld.com</em>. Rates snapshot included from public converters.</footer>
   </div>
 
   <script>
-    /* Original JS logic remains unchanged except removed placeType references */
-
     const EXCHANGE_RATES = {
-      "JPY": 155.0,
-      "EUR": 0.86,
-      "AUD": 1.51,
-      "BRL": 5.44,
-      "ZAR": 16.93,
-      "THB": 31.88,
-      "GBP": 0.75,
-      "CAD": 1.38,
-      "MXN": 18.18,
-      "USD": 1
+      "JPY": 155.0, "EUR": 0.86, "AUD": 1.51, "BRL": 5.44, "ZAR": 16.93,
+      "THB": 31.88, "GBP": 0.75, "CAD": 1.38, "MXN": 18.18, "USD": 1
     };
 
-    const DESTINATIONS = [
-      { id:'tokyo_jp', title:'Tokyo, Japan', country:'Japan', hemisphere:'eastern northern', climate:'warmer', seasons:['Spring','Summer','Fall','Winter'], stay:['few','week','2weeks','3weeks'], currency:'JPY', x:82, y:36, blurb:'A vibrant mix of modern city and tranquil shrines. Great for food, culture, and theme parks (Tokyo Disneyland/DisneySea).' },
-      { id:'paris_fr', title:'Paris, France', country:'France', hemisphere:'eastern northern', climate:'cooler', seasons:['Spring','Fall','Summer','Winter'], stay:['few','week','2weeks'], currency:'EUR', x:47, y:33, blurb:'Iconic museums, cafes, and architecture — ideal for a culturally rich vacation.' },
-      { id:'sydney_au', title:'Sydney, Australia', country:'Australia', hemisphere:'eastern southern', climate:'warmer', seasons:['Summer','Spring','Fall','Winter'], stay:['week','2weeks','3weeks'], currency:'AUD', x:82, y:80, blurb:'Beaches, harbor views, and warm coastal life. Great for resorts and outdoor activities.' },
-      { id:'rio_br', title:'Rio de Janeiro, Brazil', country:'Brazil', hemisphere:'western southern', climate:'warmer', seasons:['Summer','Spring','Fall'], stay:['few','week','2weeks'], currency:'BRL', x:41, y:60, blurb:'Famous beaches, samba, and vibrant festivals (Carnival). Perfect for sun and culture.' },
-      { id:'cape_sa', title:'Cape Town, South Africa', country:'South Africa', hemisphere:'eastern southern', climate:'cooler', seasons:['Summer','Spring','Fall','Winter'], stay:['week','2weeks'], currency:'ZAR', x:49, y:75, blurb:'Stunning coastlines, mountains, and winelands. Great for nature and food.' },
-      { id:'ny_us', title:'New York City, USA', country:'United States', hemisphere:'western northern', climate:'cooler', seasons:['Fall','Winter','Spring','Summer'], stay:['few','week'], currency:'USD', x:18, y:30, blurb:'City that never sleeps — museums, theater, dining, and nearby theme parks.' },
-      { id:'bangkok_th', title:'Bangkok, Thailand', country:'Thailand', hemisphere:'eastern northern', climate:'warmer', seasons:['Winter','Spring','Summer','Fall'], stay:['few','week','2weeks'], currency:'THB', x:72, y:45, blurb:'Markets, temples, and vibrant street food culture — affordable and busy.' },
-      { id:'london_uk', title:'London, United Kingdom', country:'United Kingdom', hemisphere:'eastern northern', climate:'cooler', seasons:['Fall','Winter','Spring','Summer'], stay:['few','week'], currency:'GBP', x:41, y:28, blurb:'Historic sites, theaters, and world-class museums; great for short stays.' },
-      { id:'vancouver_ca', title:'Vancouver, Canada', country:'Canada', hemisphere:'western northern', climate:'cooler', seasons:['Summer','Spring','Fall','Winter'], stay:['few','week','2weeks'], currency:'CAD', x:17, y:18, blurb:'Mountain + city + ocean — year-round outdoor activities.' },
-      { id:'cancun_mx', title:'Cancún, Mexico', country:'Mexico', hemisphere:'western northern', climate:'warmer', seasons:['Winter','Spring','Summer','Fall'], stay:['few','week','2weeks','3weeks'], currency:'MXN', x:14, y:40, blurb:'Beaches, resorts, and nearby ruins — a classic warm vacation destination.' }
-    ];
-
     const BUDGET_MAP = {
-      "<1000": 700,
-      "1000-2000": 1500,
-      "2000-3000": 2500,
-      "3000-4000": 3500,
-      "4000-5000": 4500,
-      "5000-10000": 7500,
-      ">10000": 12500
+      "<1000": 700,"1000-2000":1500,"2000-3000":2500,"3000-4000":3500,"4000-5000":4500,"5000-10000":7500,">10000":12500
     };
 
     function scoreDestination(dest, choices){
@@ -301,13 +288,15 @@
     const showBtn = document.getElementById('showBtn');
     const demoBtn = document.getElementById('demoBtn');
     const backBtn = document.getElementById('backBtn');
+    const redoBtn = document.getElementById('redoBtn');
 
     showBtn.addEventListener('click', onShow);
     demoBtn.addEventListener('click', onDemo);
-    backBtn && backBtn.addEventListener('click', () => {
+    backBtn.addEventListener('click', () => {
       document.getElementById('results').style.display = 'none';
       document.getElementById('vacForm').style.display = 'block';
     });
+    redoBtn.addEventListener('click', () => { onShow(); });
 
     function onShow(){
       const hemisphere = document.getElementById('hemisphere').value;
@@ -315,30 +304,38 @@
       const season = document.getElementById('season').value;
       const stay = document.getElementById('stay').value;
       const budget = document.getElementById('budget').value;
-
       if(!hemisphere||!climate||!season||!stay||!budget){alert("Please answer all questions."); return;}
-
-      const choices = {hemisphere, climate, season, stay};
-
-      const scored = DESTINATIONS.map(d => ({d, score:scoreDestination(d, choices)}));
+      const choices={hemisphere,climate,season,stay};
+      const scored=DESTINATIONS.map(d=>({d,score:scoreDestination(d,choices)}));
       scored.sort((a,b)=>b.score-a.score);
-      const winner = scored[0].d;
+      const winner=scored[0].d;
 
       document.getElementById('resultTitle').textContent = winner.title;
 
       // map pin
-      const mapWrap = document.getElementById('mapWrap');
+      const mapWrap=document.getElementById('mapWrap');
       mapWrap.querySelectorAll('.pin').forEach(p=>p.remove());
-      const pin = document.createElement('div'); pin.className='pin';
+      const pin=document.createElement('div'); pin.className='pin';
       pin.style.left=winner.x+'%'; pin.style.top=winner.y+'%';
       pin.innerHTML='<div class="dot"></div><div class="tail"></div>';
       mapWrap.appendChild(pin);
 
-      const usd = BUDGET_MAP[budget];
+      // Budget calculations
+      const usd=BUDGET_MAP[budget];
       document.getElementById('usdEstimate').textContent='$'+usd.toLocaleString();
-      const rate = EXCHANGE_RATES[winner.currency];
+      const rate=EXCHANGE_RATES[winner.currency];
       document.getElementById('convRate').textContent='1 USD = '+rate.toLocaleString()+' '+winner.currency;
       document.getElementById('localEstimate').textContent=(usd*rate).toLocaleString()+' '+winner.currency;
+
+      // Features list
+      const featuresList=document.getElementById('featuresList');
+      featuresList.innerHTML='';
+      winner.features.forEach(f=>{const li=document.createElement('li'); li.textContent=f; featuresList.appendChild(li);});
+
+      // Pictures
+      const picsContainer=document.getElementById('picsContainer');
+      picsContainer.innerHTML='';
+      winner.pics.forEach(src=>{const img=document.createElement('img'); img.src=src; picsContainer.appendChild(img);});
 
       document.getElementById('vacForm').style.display='none';
       document.getElementById('results').style.display='block';
@@ -348,7 +345,7 @@
       const random = DESTINATIONS[Math.floor(Math.random()*DESTINATIONS.length)];
       document.getElementById('previewTitle').textContent = random.title;
     }
-
   </script>
 </body>
 </html>
+
