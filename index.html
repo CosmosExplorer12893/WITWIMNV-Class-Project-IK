@@ -176,11 +176,12 @@ function scoreDestination(dest,choices){
   return score;
 }
 
-const showBtn=document.getElementById('showBtn');
-const redoBtn=document.getElementById('redoBtn');
+const showBtn = document.getElementById('showBtn');
+const redoBtn = document.getElementById('redoBtn');
 
-showBtn.addEventListener('click',onShow);
-redoBtn.addEventListener('click',onShow);
+showBtn.addEventListener('click', onShow);
+redoBtn.addEventListener('click', () => {
+    document.getElementById
 
 function onShow(){
   const hemisphere=document.getElementById('hemisphere').value;
