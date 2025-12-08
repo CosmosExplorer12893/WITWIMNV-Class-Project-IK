@@ -51,6 +51,15 @@ select, button{width:100%; padding:10px 12px; border-radius:8px; border:1px soli
 .features-list{margin-top:12px;padding:10px;background:#f0f8ff;border-radius:8px;border:1px solid #90caf9;}
 .features-list ul{margin:0;padding-left:20px;}
 @media (max-width:980px){.grid{grid-template-columns:1fr}.map-wrap{height:340px;}}
+@keyframes dropPin {
+  0% { transform: translate(-50%, -200%) scale(0.5); opacity: 0; }
+  70% { transform: translate(-50%, -90%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -100%) scale(1); }
+}
+
+.pin {
+  animation: dropPin 0.7s ease-out;
+}
 </style>
 </head>
 <body>
@@ -175,7 +184,10 @@ function scoreDestination(dest, choices) {
   if (dest.stay.includes(choices.stay)) score += 1;
   return score;
 }
-
+const SEASONAL_WEATHER = {
+  northern: { Winter: "0-5°C", Spring: "10-15°C", Summer: "20-30°C", Fall: "10-18°C" },
+  southern: { Winter: "20-30°C", Spring: "15-25°C", Summer: "25-35°C", Fall: "15-22°C" }
+};
 const showBtn = document.getElementById('showBtn');
 const redoBtn = document.getElementById('redoBtn');
 
@@ -209,6 +221,24 @@ function onShow() {
     pin.style.top = winner.y + '%';
     pin.innerHTML = '<div class="dot"></div><div class="tail"></div>';
     mapWrap.appendChild(pin);
+
+    // Determine hemisphere for seasonal info
+    const hemi = winner.hemisphere.includes('southern') ? 'southern' : 'northern';
+    const avgC = SEASONAL_WEATHER[hemi][season];
+    const avgF = Math.round(avgC * 9/5 + 32);  // Celsius to Fahrenheit
+
+    // Display seasonal info
+    let seasonInfoEl = document.getElementById('seasonInfo');
+    if(!seasonInfoEl){
+        seasonInfoEl = document.createElement('div');
+        seasonInfoEl.id = 'seasonInfo';
+        seasonInfoEl.style.textAlign = 'center';
+        seasonInfoEl.style.marginTop = '12px';
+        seasonInfoEl.style.fontSize = '0.95rem';
+        seasonInfoEl.style.color = '#01579b';
+        document.getElementById('results').appendChild(seasonInfoEl);
+}
+seasonInfoEl.textContent = `Average temperature during ${season} here: ${avgF}°F`;
 
     const usd = BUDGET_MAP[budget];
     document.getElementById('usdEstimate').textContent = '$' + usd.toLocaleString();
