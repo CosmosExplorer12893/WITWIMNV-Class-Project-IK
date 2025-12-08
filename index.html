@@ -226,8 +226,6 @@ const DESTINATIONS = [
         features: ["Resorts", "Beaches", "Nightlife"],
         mapX: 30, mapY: 55
     },
-
-    /* + 12 NEW LOCATIONS */
     {
         name: "New York City, USA",
         hemisphere: "northern western",
@@ -416,6 +414,25 @@ function onShow() {
     /* Cost */
     const estimatedCost = BUDGET_MAP[budget] || 2000;
     document.getElementById("costDisplay").textContent = "$" + estimatedCost.toLocaleString();
+
+    // ---- TRUE PRICE RANGE + CONVERSION ----
+
+    // Parse the selected budget range, ex: "$1000-$2000"
+    let budgetRange = budget.replace(/\$/g, "").split("-");
+    let minUSD = parseInt(budgetRange[0]);
+    let maxUSD = budgetRange[1] ? parseInt(budgetRange[1]) : minUSD;
+
+    // Get the location's currency + exchange rate
+    const currency = destination.currency;
+    const exchangeRate = EXCHANGE_RATES[currency];
+
+    // Convert both ends of the range into local currency
+    let minLocal = (minUSD * exchangeRate).toFixed(2);
+    let maxLocal = (maxUSD * exchangeRate).toFixed(2);
+    
+    // Display the true converted range
+    document.getElementById("conversion").innerText =
+      `Estimated Cost in ${currency}: ${minLocal} - ${maxLocal} ${currency}`;
 
     /* Currency Conversion */
     const rate = EXCHANGE_RATES[winner.currency];
