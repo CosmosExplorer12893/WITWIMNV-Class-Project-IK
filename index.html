@@ -1,273 +1,446 @@
 <!-- Here is the work for my class project: Where in the World is My Next Vacation? -->
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Where in the World is My Next Vacation?</title>
+
 <style>
-:root{
-  --accent:#0288d1;
-  --bg:#e0f7fa;
-  --card:#ffffff;
-  --muted:#555555;
-}
-*{box-sizing:border-box;}
-body{
-  margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: var(--bg);
-  color:#03396c; min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:32px;
-}
-.container{
-  width:100%; max-width:1100px; background: var(--card);
-  border-radius:14px; padding:22px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border:1px solid rgba(0,0,0,0.05);
-}
-header{margin-bottom:12px;}
-header h1{margin:0;font-size:1.35rem;}
-header p{margin:4px 0;color:var(--muted);font-size:0.95rem;}
-.grid{display:grid; grid-template-columns:1fr 440px; gap:18px;}
-.card{background:var(--card); border-radius:12px; padding:18px; border:1px solid rgba(0,0,0,0.05);}
-label{display:block; color:var(--muted); font-size:0.9rem; margin-bottom:8px;}
-select, button{width:100%; padding:10px 12px; border-radius:8px; border:1px solid #90caf9; background:#f0f8ff; color:#03396c; font-size:0.95rem;}
-.spacer{height:6px;}
-.preview{display:flex; flex-direction:column; gap:12px;}
-.dest-card{background: #f0f8ff; border-radius:10px; padding:12px; min-height:160px; display:flex; gap:12px; align-items:center; justify-content:center; text-align:center;}
-.dest-card h2{margin:0; font-size:1.15rem;}
-.muted{color:var(--muted); font-size:0.9rem;}
-.results{display:none; margin-top:18px;}
-.results .title{text-align:center; font-size:1.6rem; font-weight:700; margin-bottom:6px;}
-.map-wrap{position:relative; width:100%; height:420px; border-radius:10px; overflow:hidden; border:1px solid #90caf9; display:flex; align-items:center; justify-content:center;}
-.map-wrap img{width:100%; height:100%; object-fit:cover; display:block;}
-.pin{position:absolute; width:36px; height:36px; transform:translate(-50%,-100%); display:flex; align-items:center; justify-content:center; z-index:3; filter:drop-shadow(0 6px 18px rgba(0,0,0,0.3));}
-.pin .dot{width:18px;height:18px;border-radius:50%;background:red; border:2px solid #fff;}
-.pin .tail{position:absolute; bottom:-20px; width:2px; height:18px; background:rgba(0,0,0,0.1); left:50%; transform:translateX(-50%); border-radius:2px;}
-.stats{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;}
-.stat{background:#f0f8ff; padding:10px 14px; border-radius:10px; min-width:160px; text-align:center;}
-.stat .big{font-size:1.15rem; font-weight:700; color:#01579b;}
-.back{margin-top:12px; display:flex; justify-content:center; gap:8px;}
-.secondary{background:transparent; border:1px solid #90caf9; padding:10px 16px; border-radius:8px; cursor:pointer; color:var(--muted);}
-.primary{background:var(--accent); border:none; color:#fff; font-weight:700; cursor:pointer; font-size:1.15rem; padding:14px 16px;}
-.features-list{margin-top:12px;padding:10px;background:#f0f8ff;border-radius:8px;border:1px solid #90caf9;}
-.features-list ul{margin:0;padding-left:20px;}
-@media (max-width:980px){.grid{grid-template-columns:1fr}.map-wrap{height:340px;}}
-@keyframes dropPin {
-  0% { transform: translate(-50%, -200%) scale(0.5); opacity: 0; }
-  70% { transform: translate(-50%, -90%) scale(1.2); opacity: 1; }
-  100% { transform: translate(-50%, -100%) scale(1); }
-}
-
-.pin {
-  animation: dropPin 0.7s ease-out;
-}
-</style>
-</head>
-<body>
-<div class="container">
-<header>
-  <h1>Where in the World is My Next Vacation?</h1>
-  <p>Answer the following quick questions and see where you will go next!</p>
-</header>
-
-<div class="grid">
-  <section class="card">
-    <form id="vacForm" autocomplete="off">
-      <label for="hemisphere">What hemisphere would you like to go to?</label>
-      <select id="hemisphere" required>
-        <option value="">— choose —</option>
-        <option value="northern">Northern</option>
-        <option value="southern">Southern</option>
-        <option value="eastern">Eastern</option>
-        <option value="western">Western</option>
-      </select>
-      <div class="spacer"></div>
-
-      <label for="climate">What climate / type of weather would you like?</label>
-      <select id="climate" required>
-        <option value="">— choose —</option>
-        <option value="warmer">Warmer</option>
-        <option value="cooler">Cooler</option>
-      </select>
-      <div class="spacer"></div>
-
-      <label for="season">What season would you be going?</label>
-      <select id="season" required>
-        <option value="">— choose —</option>
-        <option>Winter</option>
-        <option>Spring</option>
-        <option>Summer</option>
-        <option>Fall</option>
-      </select>
-      <div class="spacer"></div>
-
-      <label for="stay">How long would you like to stay?</label>
-      <select id="stay" required>
-        <option value="">— choose —</option>
-        <option value="day">A day</option>
-        <option value="few">A few days</option>
-        <option value="week">A week</option>
-        <option value="2weeks">2 weeks</option>
-        <option value="3weeks">3 weeks</option>
-      </select>
-      <div class="spacer"></div>
-
-      <label for="budget">How much do you generally want to spend?</label>
-      <select id="budget" required>
-        <option value="">— choose —</option>
-        <option value="<1000">&lt;$1000</option>
-        <option value="1000-2000">$1000-$2000</option>
-        <option value="2000-3000">$2000-$3000</option>
-        <option value="3000-4000">$3000-$4000</option>
-        <option value="4000-5000">$4000-$5000</option>
-        <option value="5000-10000">$5000-$10000</option>
-        <option value=">10000">&gt;$10000</option>
-      </select>
-      <div class="spacer"></div>
-
-      <button id="showBtn" class="primary" type="button">Show My Vacation</button>
-    </form>
-  </section>
-
-  <aside class="preview">
-    <div class="dest-card card" id="previewCard">
-      <div>
-        <h2 id="previewTitle">Your recommended destination will appear here</h2>
-        <div class="muted" id="previewSubtitle">Complete the form and click "Show My Vacation".</div>
-      </div>
-    </div>
-  </aside>
-</div>
-
-<section class="results card" id="results">
-  <div class="title" id="resultTitle">—</div>
-  <div class="map-wrap" id="mapWrap">
-    <img id="worldMap" src="https://www.mapsofworld.com/maps/world-political-maps.jpg" alt="World map">
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="muted">Estimated total (USD)</div><div class="big" id="usdEstimate">$0</div></div>
-    <div class="stat"><div class="muted">Local currency (1 USD = )</div><div class="big" id="convRate">—</div></div>
-    <div class="stat"><div class="muted">Estimated in local currency</div><div class="big" id="localEstimate">—</div></div>
-  </div>
-  <div id="featuresContainer" class="features-list">
-    <strong>What to do / see:</strong>
-    <ul id="featuresList"></ul>
-  </div>
-  <div class="back">
-    <button class="primary" id="redoBtn">Try Again</button>
-  </div>
-</section>
-
-<footer>Built by Github Pages, by Author Ian King. Map Image Credit: mapsofworld.com</footer>
-
-<script>
-const EXCHANGE_RATES = {"JPY":155,"EUR":0.86,"AUD":1.51,"BRL":5.44,"ZAR":16.93,"THB":31.88,"GBP":0.75,"CAD":1.38,"MXN":18.18,"USD":1};
-const BUDGET_MAP = {"<1000":700,"1000-2000":1500,"2000-3000":2500,"3000-4000":3500,"4000-5000":4500,"5000-10000":7500,">10000":12500};
-
-const DESTINATIONS = [
-  {id:'tokyo',title:'Tokyo, Japan',country:'Japan',hemisphere:'northern eastern',climate:'warmer',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks','3weeks'],currency:'JPY',x:82,y:36, features:['Tokyo Disneyland & DisneySea','Historic temples','Modern shopping districts','Sushi and street food']},
-  {id:'paris',title:'Paris, France',country:'France',hemisphere:'northern eastern',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'EUR',x:47,y:33, features:['Eiffel Tower','Louvre Museum','Seine River cruises','French cuisine tasting']},
-  {id:'sydney',title:'Sydney, Australia',country:'Australia',hemisphere:'southern eastern',climate:'warmer',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks','3weeks'],currency:'AUD',x:82,y:80, features:['Sydney Opera House','Bondi Beach','Harbour Bridge climb','Royal Botanic Garden']},
-  {id:'rio',title:'Rio de Janeiro, Brazil',country:'Brazil',hemisphere:'southern western',climate:'warmer',seasons:['Summer','Spring','Fall'],stay:['few','week','2weeks'],currency:'BRL',x:41,y:60, features:['Christ the Redeemer','Copacabana Beach','Sugarloaf Mountain','Samba and Carnival']},
-  {id:'capetown',title:'Cape Town, South Africa',country:'South Africa',hemisphere:'southern eastern',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'ZAR',x:49,y:75, features:['Table Mountain','Cape Point','V&A Waterfront','Winelands tours']},
-  {id:'nyc',title:'New York City, USA',country:'USA',hemisphere:'northern western',climate:'cooler',seasons:['Fall','Winter','Spring','Summer'],stay:['few','week'],currency:'USD',x:18,y:30, features:['Statue of Liberty','Central Park','Broadway shows','Times Square']},
-  {id:'bangkok',title:'Bangkok, Thailand',country:'Thailand',hemisphere:'northern eastern',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['few','week','2weeks'],currency:'THB',x:83,y:25, features:['Grand Palace','Floating Markets','Street food tours','Nightlife']},
-  {id:'london',title:'London, UK',country:'UK',hemisphere:'northern western',climate:'cooler',seasons:['Spring','Summer','Fall','Winter'],stay:['few','week','2weeks'],currency:'GBP',x:45,y:28, features:['Big Ben','Tower of London','British Museum','West End Theatre']},
-  {id:'vancouver',title:'Vancouver, Canada',country:'Canada',hemisphere:'northern western',climate:'cooler',seasons:['Summer','Spring','Fall','Winter'],stay:['week','2weeks'],currency:'CAD',x:16,y:24, features:['Stanley Park','Capilano Suspension Bridge','Grouse Mountain','Gastown']},
-  {id:'cancun',title:'Cancún, Mexico',country:'Mexico',hemisphere:'northern western',climate:'warmer',seasons:['Winter','Spring','Summer','Fall'],stay:['week','2weeks','3weeks'],currency:'MXN',x:18,y:63, features:['Beaches','Mayan ruins','Snorkeling','Nightlife']}
-];
-
-function scoreDestination(dest, choices) {
-  let score = 0;
-  if (dest.hemisphere.includes(choices.hemisphere)) score += 3;
-  if (dest.climate === choices.climate) score += 2;
-  if (dest.seasons.includes(choices.season)) score += 1;
-  if (dest.stay.includes(choices.stay)) score += 1;
-  return score;
-}
-const SEASONAL_WEATHER = {
-  northern: { Winter: "0-5°C", Spring: "10-15°C", Summer: "20-30°C", Fall: "10-18°C" },
-  southern: { Winter: "20-30°C", Spring: "15-25°C", Summer: "25-35°C", Fall: "15-22°C" }
-};
-const showBtn = document.getElementById('showBtn');
-const redoBtn = document.getElementById('redoBtn');
-
-showBtn.addEventListener('click', onShow);
-redoBtn.addEventListener('click', onTryAgain);
-
-function onShow() {
-    const hemisphere = document.getElementById('hemisphere').value;
-    const climate = document.getElementById('climate').value;
-    const season = document.getElementById('season').value;
-    const stay = document.getElementById('stay').value;
-    const budget = document.getElementById('budget').value;
-
-    if (!hemisphere || !climate || !season || !stay || !budget) {
-        alert("Please answer all questions.");
-        return;
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #e3f2fd;
+        margin: 0;
+        padding: 0;
+        color: #003366;
     }
 
-    const choices = { hemisphere, climate, season, stay };
-    const scored = DESTINATIONS.map(d => ({ d, score: scoreDestination(d, choices) }));
-    scored.sort((a, b) => b.score - a.score);
-    const winner = scored[0].d;
+    h1, h2 {
+        text-align: center;
+        color: #003366;
+    }
 
-    document.getElementById('resultTitle').textContent = winner.title;
+    .container {
+        width: 80%;
+        margin: auto;
+        max-width: 900px;
+    }
 
-    const mapWrap = document.getElementById('mapWrap');
-    mapWrap.querySelectorAll('.pin').forEach(p => p.remove());
-    const pin = document.createElement('div'); 
-    pin.className = 'pin';
-    pin.style.left = winner.x + '%'; 
-    pin.style.top = winner.y + '%';
-    pin.innerHTML = '<div class="dot"></div><div class="tail"></div>';
-    mapWrap.appendChild(pin);
+    label {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #003366;
+    }
 
-    // Determine hemisphere for seasonal info
-    const hemi = winner.hemisphere.includes('southern') ? 'southern' : 'northern';
-    const avgC = SEASONAL_WEATHER[hemi][season];
-    const avgF = Math.round(avgC * 9/5 + 32);  // Celsius to Fahrenheit
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 20px 0;
+        font-size: 1rem;
+        color: #003366;
+        background-color: #ffffff;
+        border: 2px solid #90caf9;
+        border-radius: 6px;
+    }
 
-    // Display seasonal info
-    let seasonInfoEl = document.getElementById('seasonInfo');
-    if(!seasonInfoEl){
-        seasonInfoEl = document.createElement('div');
-        seasonInfoEl.id = 'seasonInfo';
-        seasonInfoEl.style.textAlign = 'center';
-        seasonInfoEl.style.marginTop = '12px';
-        seasonInfoEl.style.fontSize = '0.95rem';
-        seasonInfoEl.style.color = '#01579b';
-        document.getElementById('results').appendChild(seasonInfoEl);
-}
-seasonInfoEl.textContent = `Average temperature during ${season} here: ${avgF}°F`;
+    button {
+        width: 100%;
+        padding: 14px;
+        background-color: #0288d1;
+        color: white;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
 
-    const usd = BUDGET_MAP[budget];
-    document.getElementById('usdEstimate').textContent = '$' + usd.toLocaleString();
-    const rate = EXCHANGE_RATES[winner.currency];
-    document.getElementById('convRate').textContent = '1 USD = ' + rate.toLocaleString() + ' ' + winner.currency;
-    document.getElementById('localEstimate').textContent = (usd * rate).toLocaleString() + ' ' + winner.currency;
+    button:hover {
+        background-color: #0277bd;
+    }
 
-    const featuresList = document.getElementById('featuresList');
-    featuresList.innerHTML = '';
+    #results {
+        display: none;
+        margin-top: 30px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid #90caf9;
+    }
+
+    #mapContainer {
+        width: 100%;
+        position: relative;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    #worldMap {
+        width: 100%;
+        max-width: 700px;
+        border-radius: 10px;
+    }
+
+    .pin {
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        border-radius: 50%;
+        position: absolute;
+        transform: translate(-50%, -100%);
+        animation: dropPin 0.7s ease-out;
+    }
+
+    @keyframes dropPin {
+        0% { transform: translate(-50%, -200%) scale(0.5); opacity: 0; }
+        70% { transform: translate(-50%, -90%) scale(1.2); opacity: 1; }
+        100% { transform: translate(-50%, -100%) scale(1); }
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Where in the World is My Next Vacation?</h1>
+
+<div class="container">
+
+    <!-- Form -->
+    <div id="formSection">
+
+        <label>What hemisphere would you like to go to?</label>
+        <select id="hemisphere">
+            <option value="">Select One</option>
+            <option value="northern">Northern</option>
+            <option value="southern">Southern</option>
+            <option value="eastern">Eastern</option>
+            <option value="western">Western</option>
+        </select>
+
+        <label>What climate would you like?</label>
+        <select id="climate">
+            <option value="">Select One</option>
+            <option value="warm">Warmer</option>
+            <option value="cool">Cooler</option>
+        </select>
+
+        <label>What season are you traveling?</label>
+        <select id="season">
+            <option value="">Select One</option>
+            <option>Winter</option>
+            <option>Spring</option>
+            <option>Summer</option>
+            <option>Fall</option>
+        </select>
+
+        <label>How long will you stay?</label>
+        <select id="duration">
+            <option value="">Select One</option>
+            <option>A day</option>
+            <option>A few days</option>
+            <option>A week</option>
+            <option>2 weeks</option>
+            <option>3 weeks</option>
+        </select>
+
+        <label>What is your budget?</label>
+        <select id="budget">
+            <option value="">Select One</option>
+            <option><$1000</option>
+            <option>$1000-$2000</option>
+            <option>$2000-$3000</option>
+            <option>$3000-$4000</option>
+            <option>$4000-$5000</option>
+            <option>$5000-$10000</option>
+            <option>>$10000</option>
+        </select>
+
+        <button id="showBtn">SHOW MY VACATION</button>
+
+    </div>
+
+    <!-- Results -->
+    <div id="results">
+        <h2 id="destinationName"></h2>
+
+        <div id="mapContainer">
+            <img id="worldMap" src="https://www.mapsofworld.com/maps/world-political-maps.jpg">
+            <div id="pinHolder"></div>
+        </div>
+
+        <h3>What This Place Is Known For:</h3>
+        <ul id="featureList"></ul>
+
+        <h3>Estimated Cost:</h3>
+        <p id="costDisplay"></p>
+
+        <h3>Currency Conversion:</h3>
+        <p id="currencyDisplay"></p>
+
+        <p id="seasonInfo"></p>
+
+        <button id="redoBtn">Try Again</button>
+    </div>
+</div>
+
+<script>
+/* -------------------------
+      DESTINATION DATA
+------------------------- */
+const DESTINATIONS = [
+    /* ORIGINAL 4 */
+    {
+        name: "Tokyo, Japan",
+        hemisphere: "northern eastern",
+        climate: "cool",
+        costIndex: 4,
+        currency: "JPY",
+        features: ["Technology", "Anime culture", "Temples", "Nightlife"],
+        mapX: 82, mapY: 42
+    },
+    {
+        name: "Sydney, Australia",
+        hemisphere: "southern eastern",
+        climate: "warm",
+        costIndex: 5,
+        currency: "AUD",
+        features: ["Beaches", "Opera House", "Wildlife"],
+        mapX: 88, mapY: 82
+    },
+    {
+        name: "Paris, France",
+        hemisphere: "northern eastern",
+        climate: "cool",
+        costIndex: 4,
+        currency: "EUR",
+        features: ["Museums", "Cuisine", "Fashion"],
+        mapX: 52, mapY: 38
+    },
+    {
+        name: "Cancún, Mexico",
+        hemisphere: "northern western",
+        climate: "warm",
+        costIndex: 2,
+        currency: "MXN",
+        features: ["Resorts", "Beaches", "Nightlife"],
+        mapX: 30, mapY: 55
+    },
+
+    /* + 12 NEW LOCATIONS */
+    {
+        name: "New York City, USA",
+        hemisphere: "northern western",
+        climate: "cool",
+        costIndex: 5,
+        currency: "USD",
+        features: ["Skyscrapers", "Broadway", "Museums"],
+        mapX: 33, mapY: 35
+    },
+    {
+        name: "Rio de Janeiro, Brazil",
+        hemisphere: "southern western",
+        climate: "warm",
+        costIndex: 3,
+        currency: "BRL",
+        features: ["Beaches", "Carnival", "Mountains"],
+        mapX: 37, mapY: 70
+    },
+    {
+        name: "Cape Town, South Africa",
+        hemisphere: "southern eastern",
+        climate: "warm",
+        costIndex: 3,
+        currency: "ZAR",
+        features: ["Table Mountain", "Beaches", "Wine Country"],
+        mapX: 55, mapY: 80
+    },
+    {
+        name: "London, United Kingdom",
+        hemisphere: "northern eastern",
+        climate: "cool",
+        costIndex: 5,
+        currency: "GBP",
+        features: ["History", "Museums", "Landmarks"],
+        mapX: 50, mapY: 34
+    },
+    {
+        name: "Dubai, UAE",
+        hemisphere: "northern eastern",
+        climate: "warm",
+        costIndex: 5,
+        currency: "AED",
+        features: ["Luxury", "Skyscrapers", "Desert"],
+        mapX: 65, mapY: 46
+    },
+    {
+        name: "Bangkok, Thailand",
+        hemisphere: "northern eastern",
+        climate: "warm",
+        costIndex: 2,
+        currency: "THB",
+        features: ["Temples", "Street Food", "Nightlife"],
+        mapX: 78, mapY: 55
+    },
+    {
+        name: "Vancouver, Canada",
+        hemisphere: "northern western",
+        climate: "cool",
+        costIndex: 4,
+        currency: "CAD",
+        features: ["Nature", "Mountains", "Harbor"],
+        mapX: 20, mapY: 27
+    },
+    {
+        name: "Cairo, Egypt",
+        hemisphere: "northern eastern",
+        climate: "warm",
+        costIndex: 2,
+        currency: "EGP",
+        features: ["Pyramids", "Museums", "History"],
+        mapX: 59, mapY: 52
+    },
+    {
+        name: "Rome, Italy",
+        hemisphere: "northern eastern",
+        climate: "warm",
+        costIndex: 3,
+        currency: "EUR",
+        features: ["Ancient History", "Cuisine", "Art"],
+        mapX: 53, mapY: 45
+    },
+    {
+        name: "Seoul, South Korea",
+        hemisphere: "northern eastern",
+        climate: "cool",
+        costIndex: 3,
+        currency: "KRW",
+        features: ["K-Pop", "Technology", "Cuisine"],
+        mapX: 84, mapY: 38
+    },
+    {
+        name: "Honolulu, Hawaii",
+        hemisphere: "northern western",
+        climate: "warm",
+        costIndex: 5,
+        currency: "USD",
+        features: ["Beaches", "Volcanoes", "Resorts"],
+        mapX: 13, mapY: 58
+    },
+    {
+        name: "Buenos Aires, Argentina",
+        hemisphere: "southern western",
+        climate: "cool",
+        costIndex: 3,
+        currency: "ARS",
+        features: ["Tango", "Cuisine", "Culture"],
+        mapX: 35, mapY: 78
+    }
+];
+
+/* Exchange Rates */
+const EXCHANGE_RATES = {
+    JPY: 150,
+    AUD: 1.5,
+    EUR: 0.93,
+    MXN: 17,
+    USD: 1,
+    BRL: 5.0,
+    ZAR: 18.0,
+    GBP: 0.78,
+    AED: 3.67,
+    THB: 35,
+    CAD: 1.35,
+    EGP: 48,
+    KRW: 1360,
+    ARS: 850
+};
+
+/* Budget Map: rough multipliers */
+const BUDGET_MAP = {
+    "<$1000": 800,
+    "$1000-$2000": 1500,
+    "$2000-$3000": 2500,
+    "$3000-$4000": 3500,
+    "$4000-$5000": 4500,
+    "$5000-$10000": 7500,
+    ">$10000": 12000
+};
+
+/* Seasonal Weather (Celsius averages) */
+const SEASONAL_WEATHER = {
+    northern: { Winter: 0, Spring: 12, Summer: 25, Fall: 14 },
+    southern: { Winter: 25, Spring: 20, Summer: 30, Fall: 18 }
+};
+
+/* -------------------------
+       BUTTON HANDLERS
+------------------------- */
+document.getElementById("showBtn").onclick = onShow;
+document.getElementById("redoBtn").onclick = onTryAgain;
+
+function onShow() {
+    const hemisphere = document.getElementById("hemisphere").value;
+    const climate = document.getElementById("climate").value;
+    const season = document.getElementById("season").value;
+    const budget = document.getElementById("budget").value;
+
+    /* Match destination */
+    const match = DESTINATIONS.find(d =>
+        d.hemisphere.includes(hemisphere) &&
+        d.climate === climate
+    );
+
+    const winner = match || DESTINATIONS[0];
+
+    document.getElementById("destinationName").textContent = winner.name;
+
+    /* Map Pin */
+    const pinHolder = document.getElementById("pinHolder");
+    pinHolder.innerHTML = "";
+    const pin = document.createElement("div");
+    pin.className = "pin";
+    pin.style.left = winner.mapX + "%";
+    pin.style.top = winner.mapY + "%";
+    pinHolder.appendChild(pin);
+
+    /* Features */
+    const featureList = document.getElementById("featureList");
+    featureList.innerHTML = "";
     winner.features.forEach(f => {
-        const li = document.createElement('li'); 
-        li.textContent = f; 
-        featuresList.appendChild(li);
+        const li = document.createElement("li");
+        li.textContent = f;
+        featureList.appendChild(li);
     });
 
-    document.getElementById('vacForm').style.display = 'none';
-    document.getElementById('results').style.display = 'block';
+    /* Cost */
+    const estimatedCost = BUDGET_MAP[budget] || 2000;
+    document.getElementById("costDisplay").textContent = "$" + estimatedCost.toLocaleString();
+
+    /* Currency Conversion */
+    const rate = EXCHANGE_RATES[winner.currency];
+    const converted = (1 * rate).toFixed(2);
+    document.getElementById("currencyDisplay").textContent =
+        `$1 USD ≈ ${converted} ${winner.currency}`;
+
+    /* Seasonal Weather (Fahrenheit) */
+    const hemi = winner.hemisphere.includes("southern") ? "southern" : "northern";
+    const avgC = SEASONAL_WEATHER[hemi][season];
+    const avgF = Math.round(avgC * 9/5 + 32);
+
+    document.getElementById("seasonInfo").textContent =
+        `Average temperature during ${season}: ${avgF}°F`;
+
+    /* Show Results */
+    document.getElementById("formSection").style.display = "none";
+    document.getElementById("results").style.display = "block";
 }
 
 function onTryAgain() {
-    document.getElementById('vacForm').reset();
-    document.getElementById('mapWrap').querySelectorAll('.pin').forEach(p => p.remove());
-    document.getElementById('featuresList').innerHTML = '';
-    document.getElementById('usdEstimate').textContent = '$0';
-    document.getElementById('convRate').textContent = '—';
-    document.getElementById('localEstimate').textContent = '—';
-    document.getElementById('results').style.display = 'none';
-    document.getElementById('vacForm').style.display = 'block';
+    document.getElementById("results").style.display = "none";
+    document.getElementById("formSection").style.display = "block";
 }
 </script>
+
 </body>
 </html>
